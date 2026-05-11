@@ -56,11 +56,9 @@ export async function submitSessionIntake({ session, formData }) {
   const intake = buildIntakePayload(session, formData)
   const supabase = getSupabaseClient()
 
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from("consultation_leads")
-    .insert(mapIntakeToLeadRow(intake, session))
-    .select("id")
-    .single()
+    .insert([mapIntakeToLeadRow(intake, session)])
 
   if (error) {
     throw new SessionIntakeError(
@@ -69,20 +67,16 @@ export async function submitSessionIntake({ session, formData }) {
     )
   }
 
-  if (!data?.id) {
-    throw new SessionIntakeError(
-      "Your intake request was submitted, but no lead id was returned.",
-    )
-  }
-
-  // TODO: Send confirmation email after payment succeeds or intake is stored.
-  // TODO: After lead insert succeeds, call a backend endpoint that creates a
-  // Stripe Checkout session using the lead id and selected session price, then
-  // redirect with window.location.assign(checkoutUrl).
+  // TODO: After intake review, email the complimentary intro-call Calendly link from
+  // scheduling config instead of exposing public self-serve booking on the site.
+  // TODO: Store Calendly event URLs in config (or env) for intro, Discovery, and
+  // Product Strategy sessions.
+  // TODO: Add paid Calendly or Stripe-backed scheduling for Discovery and Product
+  // Strategy once payments are integrated.
 
   return {
+    success: true,
     intake,
-    leadId: data.id,
     checkoutUrl: null,
   }
 }

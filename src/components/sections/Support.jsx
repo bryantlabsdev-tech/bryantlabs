@@ -1,6 +1,8 @@
 import { Check } from "lucide-react"
 import {
   supportCapabilities,
+  supportEngagementsPoints,
+  supportEngagementsTitle,
   supportIntroCopy,
   supportPartnerCopy,
   supportPlans,
@@ -30,6 +32,24 @@ export default function Support() {
               {capability}
             </span>
           ))}
+        </ScrollReveal>
+
+        <ScrollReveal className="mt-14">
+          <GlassCard hover={false} className="p-6 sm:p-8">
+            <h3 className="text-xl font-semibold text-white">
+              {supportEngagementsTitle}
+            </h3>
+            <ul className="mt-6 grid gap-3 lg:grid-cols-3">
+              {supportEngagementsPoints.map((point) => (
+                <li
+                  key={point}
+                  className="rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-4 text-sm leading-relaxed text-white/75"
+                >
+                  {point}
+                </li>
+              ))}
+            </ul>
+          </GlassCard>
         </ScrollReveal>
 
         <div className="mt-14 grid gap-6 lg:grid-cols-3">

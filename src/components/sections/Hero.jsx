@@ -1,6 +1,6 @@
 import { motion } from "framer-motion"
 import { ArrowRight, Sparkles } from "lucide-react"
-import { primaryCta, secondaryCta } from "../../data/sessions"
+import { discoveryRequestCta, secondaryCta } from "../../data/sessions"
 import Button from "../ui/Button"
 import ScrollReveal from "../ui/ScrollReveal"
 
@@ -48,7 +48,7 @@ export default function Hero() {
             </ScrollReveal>
 
             <ScrollReveal delay={0.15} className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <Button href="#contact">{primaryCta}</Button>
+              <Button href="#contact">{discoveryRequestCta}</Button>
               <Button href="#work" variant="secondary">
                 {secondaryCta}
                 <ArrowRight className="h-4 w-4" />

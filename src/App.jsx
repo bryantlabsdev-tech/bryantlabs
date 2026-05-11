@@ -9,6 +9,7 @@ import Process from "./components/sections/Process"
 import Support from "./components/sections/Support"
 import Services from "./components/sections/Services"
 import Testimonials from "./components/sections/Testimonials"
+import ErrorBoundary from "./components/ui/ErrorBoundary"
 
 export default function App() {
   return (
@@ -16,14 +17,30 @@ export default function App() {
       <Background />
       <Navbar />
       <main>
-        <Hero />
-        <Services />
-        <Portfolio />
-        <Process />
-        <Pricing />
-        <Support />
-        <Testimonials />
-        <Contact />
+        <ErrorBoundary sectionName="Hero">
+          <Hero />
+        </ErrorBoundary>
+        <ErrorBoundary sectionName="Services">
+          <Services />
+        </ErrorBoundary>
+        <ErrorBoundary sectionName="Portfolio">
+          <Portfolio />
+        </ErrorBoundary>
+        <ErrorBoundary sectionName="Process">
+          <Process />
+        </ErrorBoundary>
+        <ErrorBoundary sectionName="Pricing">
+          <Pricing />
+        </ErrorBoundary>
+        <ErrorBoundary sectionName="Support">
+          <Support />
+        </ErrorBoundary>
+        <ErrorBoundary sectionName="Testimonials">
+          <Testimonials />
+        </ErrorBoundary>
+        <ErrorBoundary sectionName="Contact">
+          <Contact />
+        </ErrorBoundary>
       </main>
       <Footer />
     </div>

@@ -1,9 +1,14 @@
 import { useMemo, useState } from "react"
 import { Mail, Send } from "lucide-react"
+import { introCallSchedulingCopy, introCallTitle } from "../../config/scheduling"
+import { consultationEngagements } from "../../data/consultation"
 import {
-  primaryCta,
+  intakeSubmitCta,
+  sessionAfterSubmitCopy,
   sessionCreditCopy,
   sessionIntakeCopy,
+  sessionSidebarNote,
+  sessionSuccessMessage,
   sessionValueCopy,
   strategySessions,
 } from "../../data/sessions"
@@ -95,20 +100,17 @@ export default function Contact() {
 
     try {
       const formData = new FormData(form)
-      const { leadId, checkoutUrl } = await submitSessionIntake({
+      const { success, checkoutUrl } = await submitSessionIntake({
         session: selectedSession,
         formData,
       })
 
-      console.log("Consultation lead saved:", leadId)
+      console.log("Consultation lead saved:", success)
 
-      setSuccessMessage(
-        "Your intake request was saved. We will follow up with next steps for your discovery session.",
-      )
+      setSuccessMessage(sessionSuccessMessage)
 
-      // TODO: After lead insert succeeds, redirect to a backend endpoint that
-      // creates a Stripe Checkout session using leadId and the selected session
-      // price, then assign window.location to the returned checkout URL.
+      // TODO: After intake review, email the intro-call Calendly link from scheduling
+      // config. Later add paid Calendly or Stripe sessions for Discovery and Strategy.
       if (checkoutUrl) {
         window.location.assign(checkoutUrl)
       }
@@ -120,7 +122,7 @@ export default function Contact() {
       }
 
       setSubmitError(
-        "Something went wrong while saving your request. Please try again.",
+        "Something went wrong while submitting your project intake. Please try again.",
       )
       console.error("Consultation intake failed:", error)
     } finally {
@@ -132,8 +134,8 @@ export default function Contact() {
     <section id="contact" className="py-20 sm:py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="Discovery & Strategy"
-          title="Start with a paid strategy session."
+          eyebrow="Getting started"
+          title="Submit your free project intake."
           description={sessionValueCopy}
         />
 
@@ -145,15 +147,22 @@ export default function Contact() {
                   {sessionCreditCopy}
                 </p>
                 <p className="text-sm leading-relaxed text-white/70">
-                  {sessionIntakeCopy} Share the essentials below so your session
-                  stays focused on scope, direction, and next steps.
+                  {sessionIntakeCopy} {sessionAfterSubmitCopy}
+                </p>
+                <p className="text-sm leading-relaxed text-muted">
+                  Share the essentials below so Bryant Labs can review your
+                  project, schedule your intro call, and recommend the right
+                  planning session if we move forward together.
                 </p>
               </div>
 
               <form className="mt-8 space-y-8" onSubmit={handleSubmit} noValidate>
-                <FormSection title="Session">
+                <FormSection
+                  title="Planning session preference"
+                  description="If we proceed beyond the intro call, indicate which paid planning session you would prefer."
+                >
                   <FormOptionGroup
-                    label="Preferred session"
+                    label="Preferred planning session"
                     name="session"
                     options={sessionOptions}
                     columns={2}
@@ -297,7 +306,7 @@ export default function Contact() {
                   className="w-full sm:w-auto"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Saving your request..." : primaryCta}
+                  {isSubmitting ? "Submitting project intake..." : intakeSubmitCta}
                   <Send className="h-4 w-4" />
                 </Button>
               </form>
@@ -306,26 +315,37 @@ export default function Contact() {
 
           <ScrollReveal delay={0.08}>
             <GlassCard className="h-full p-6 sm:p-8">
-              <p className="text-sm font-medium text-white">Session options</p>
+              <p className="text-sm font-medium text-white">
+                Consultation flow
+              </p>
               <p className="mt-2 text-sm leading-relaxed text-muted">
                 {sessionValueCopy}
               </p>
 
               <div className="mt-6 space-y-3">
-                {strategySessions.map((session) => (
+                {consultationEngagements.map((engagement) => (
                   <div
-                    key={session.id}
-                    className="flex items-center justify-between rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3"
+                    key={engagement.id}
+                    className="rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3"
                   >
-                    <div>
-                      <p className="text-sm font-medium text-white">
-                        {session.name}
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-sm font-medium text-white">
+                          {engagement.name}
+                        </p>
+                        {engagement.duration ? (
+                          <p className="mt-1 text-xs text-muted">
+                            {engagement.duration}
+                          </p>
+                        ) : null}
+                        <p className="mt-2 text-xs leading-relaxed text-muted">
+                          {engagement.description}
+                        </p>
+                      </div>
+                      <p className="shrink-0 text-sm font-semibold text-white">
+                        {engagement.priceLabel}
                       </p>
-                      <p className="mt-1 text-xs text-muted">{session.duration}</p>
                     </div>
-                    <p className="text-sm font-semibold text-white">
-                      {session.priceLabel}
-                    </p>
                   </div>
                 ))}
               </div>
@@ -333,6 +353,13 @@ export default function Contact() {
               <p className="mt-6 text-sm leading-relaxed text-muted">
                 {sessionCreditCopy}
               </p>
+
+              <div className="mt-8 rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-4">
+                <p className="text-sm font-medium text-white">{introCallTitle}</p>
+                <p className="mt-2 text-sm leading-relaxed text-muted">
+                  {introCallSchedulingCopy}
+                </p>
+              </div>
 
               <div className="mt-8 flex items-start gap-4">
                 <div className="rounded-2xl bg-white/[0.05] p-3">
@@ -352,9 +379,7 @@ export default function Contact() {
               </div>
 
               <p className="mt-8 rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3 text-sm text-white/75">
-                Designed for founders, businesses, and creators who want software
-                built without managing developers themselves. Session requests are
-                reviewed personally — usually within a few hours.
+                {sessionSidebarNote}
               </p>
             </GlassCard>
           </ScrollReveal>

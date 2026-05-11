@@ -1,5 +1,11 @@
 import { Check } from "lucide-react"
-import { pricingTiers } from "../../data/pricing"
+import {
+  billingIntro,
+  billingPhases,
+  billingPoints,
+  billingTitle,
+} from "../../data/billing"
+import { pricingIntro, pricingTiers } from "../../data/pricing"
 import { primaryCta } from "../../data/sessions"
 import Button from "../ui/Button"
 import GlassCard from "../ui/GlassCard"
@@ -12,8 +18,8 @@ export default function Pricing() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Pricing"
-          title="Transparent starting points, scoped to your build"
-          description="Tell me what you need and I’ll scope the fastest path to a quote. These tiers are starting points—not rigid packages."
+          title="Milestone-based engagements, scoped to your build"
+          description={pricingIntro}
         />
 
         <div className="mt-14 grid gap-6 lg:grid-cols-3">
@@ -61,6 +67,46 @@ export default function Pricing() {
             </ScrollReveal>
           ))}
         </div>
+
+        <ScrollReveal className="mt-14">
+          <GlassCard hover={false} className="p-6 sm:p-8">
+            <h3 className="text-xl font-semibold text-white">{billingTitle}</h3>
+            <p className="mt-3 max-w-3xl text-sm leading-relaxed text-muted sm:text-base">
+              {billingIntro}
+            </p>
+            <ol className="mt-8 grid gap-4 lg:grid-cols-3">
+              {billingPhases.map((phase, index) => (
+                <li
+                  key={phase.title}
+                  className="rounded-2xl border border-white/8 bg-white/[0.03] p-5"
+                >
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-300/80">
+                    Step {index + 1}
+                  </p>
+                  <h4 className="mt-3 text-base font-semibold text-white">
+                    {phase.title}
+                  </h4>
+                  <p className="mt-2 text-sm leading-relaxed text-white/75">
+                    {phase.description}
+                  </p>
+                  <p className="mt-3 text-sm leading-relaxed text-muted">
+                    {phase.detail}
+                  </p>
+                </li>
+              ))}
+            </ol>
+            <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+              {billingPoints.map((point) => (
+                <li
+                  key={point}
+                  className="rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3 text-sm leading-relaxed text-white/75"
+                >
+                  {point}
+                </li>
+              ))}
+            </ul>
+          </GlassCard>
+        </ScrollReveal>
       </div>
     </section>
   )
