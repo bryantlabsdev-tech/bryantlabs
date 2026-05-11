@@ -1,0 +1,45 @@
+import { motion } from "framer-motion"
+
+const variants = {
+  primary:
+    "bg-white text-ink hover:bg-white/90 shadow-[0_0_40px_-12px_rgba(255,255,255,0.55)]",
+  secondary:
+    "glass text-white hover:border-white/20 hover:bg-white/[0.06]",
+  ghost: "text-muted hover:text-white hover:bg-white/5",
+}
+
+export default function Button({
+  children,
+  variant = "primary",
+  href,
+  className = "",
+  ...props
+}) {
+  const classes = `inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${variants[variant]} ${className}`
+
+  if (href) {
+    return (
+      <motion.a
+        href={href}
+        whileHover={{ y: -2 }}
+        whileTap={{ scale: 0.98 }}
+        className={classes}
+        {...props}
+      >
+        {children}
+      </motion.a>
+    )
+  }
+
+  return (
+    <motion.button
+      type="button"
+      whileHover={{ y: -2 }}
+      whileTap={{ scale: 0.98 }}
+      className={classes}
+      {...props}
+    >
+      {children}
+    </motion.button>
+  )
+}

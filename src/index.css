@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  --color-ink: #050508;
+  --color-surface: #0c0c12;
+  --color-elevated: #12121a;
+  --color-muted: #8b8b9e;
+  --color-line: rgba(255, 255, 255, 0.08);
+  --color-accent: #6366f1;
+  --color-accent-soft: #818cf8;
+  --color-cyan: #22d3ee;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-ink font-sans text-white antialiased;
+    background-color: var(--color-ink);
+  }
+
+  ::selection {
+  background: rgba(99, 102, 241, 0.35);
+  color: #fff;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply border border-white/10 bg-white/[0.03] backdrop-blur-xl;
+  }
+
+  .glass-strong {
+    @apply border border-white/12 bg-white/[0.06] backdrop-blur-2xl;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-white via-indigo-100 to-cyan-200 bg-clip-text text-transparent;
+  }
+
+  .glow-ring {
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.06),
+      0 0 80px -20px rgba(99, 102, 241, 0.45);
+  }
+}
