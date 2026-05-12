@@ -41,6 +41,8 @@ export default async function handler(req, res) {
   const analyticsContext = {
     sessionId: payload.analyticsSessionId,
     userAgent,
+    email: payload.email,
+    analyticsDisabled: payload.analyticsDisabled,
   }
 
   if (payload.websiteUrl) {

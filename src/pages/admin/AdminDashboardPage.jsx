@@ -76,11 +76,14 @@ export default function AdminDashboardPage() {
       setSelectedLead((current) =>
         current?.id === updatedLead.id ? updatedLead : current,
       )
-      void trackLeadStatusUpdated({
-        lead_id: lead.id,
-        previous_status: lead.status,
-        next_status: nextStatus,
-      })
+      void trackLeadStatusUpdated(
+        {
+          lead_id: lead.id,
+          previous_status: lead.status,
+          next_status: nextStatus,
+        },
+        session?.user,
+      )
     } catch (updateError) {
       setStatusError(
         updateError?.message ?? "We could not update this lead status.",
@@ -128,7 +131,7 @@ export default function AdminDashboardPage() {
       setSelectedLead((current) =>
         current?.id === updatedLead.id ? updatedLead : current,
       )
-      void trackIntroLinkSent({ lead_id: lead.id })
+      void trackIntroLinkSent({ lead_id: lead.id }, session?.user)
     } finally {
       setSendingIntroLinkLeadId(null)
     }

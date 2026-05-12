@@ -1,4 +1,6 @@
 import { createClient } from "@supabase/supabase-js"
+import { getSupabaseClient } from "./supabaseClient"
+import { shouldTrack } from "./analytics/shouldTrack"
 
 const SESSION_STORAGE_KEY = "bryantlabs.analytics.session_id"
 
@@ -100,10 +102,31 @@ function sanitizeMetadata(metadata = {}) {
   )
 }
 
-export async function trackEvent(eventName, { pagePath, metadata } = {}) {
+async function resolveTrackingUser(explicitUser) {
+  if (explicitUser) {
+    return explicitUser
+  }
+
+  try {
+    const { data } = await getSupabaseClient().auth.getSession()
+    return data.session?.user
+  } catch {
+    return undefined
+  }
+}
+
+async function canTrackAnalytics(user) {
+  return shouldTrack(await resolveTrackingUser(user))
+}
+
+export async function trackEvent(eventName, { pagePath, metadata, user } = {}) {
   const client = getAnalyticsClient()
 
   if (!client || !eventName) {
+    return
+  }
+
+  if (!(await canTrackAnalytics(user))) {
     return
   }
 
@@ -132,10 +155,14 @@ export async function trackEvent(eventName, { pagePath, metadata } = {}) {
   }
 }
 
-export async function trackAdminEvent(eventName, { pagePath = "/admin", metadata } = {}) {
+export async function trackAdminEvent(eventName, { pagePath = "/admin", metadata, user } = {}) {
   const client = getAnalyticsClient()
 
   if (!client || !eventName) {
+    return
+  }
+
+  if (!(await canTrackAnalytics(user))) {
     return
   }
 
@@ -158,12 +185,16 @@ export async function trackAdminEvent(eventName, { pagePath = "/admin", metadata
   }
 }
 
-export function trackPageView(pagePath = getCurrentPagePath()) {
+export async function trackPageView(pagePath = getCurrentPagePath(), options = {}) {
   if (!shouldTrackPublicPath(pagePath)) {
     return Promise.resolve()
   }
 
-  return trackEvent(ANALYTICS_EVENTS.PAGE_VIEW, { pagePath })
+  if (!(await canTrackAnalytics(options.user))) {
+    return Promise.resolve()
+  }
+
+  return trackEvent(ANALYTICS_EVENTS.PAGE_VIEW, { pagePath, user: options.user })
 }
 
 export function trackCtaClick(ctaLabel, metadata = {}) {
@@ -210,10 +241,10 @@ export function trackIntakeBlockedRateLimit(metadata = {}) {
   })
 }
 
-export function trackIntroLinkSent(metadata = {}) {
-  return trackAdminEvent(ANALYTICS_EVENTS.INTRO_LINK_SENT, { metadata })
+export function trackIntroLinkSent(metadata = {}, user) {
+  return trackAdminEvent(ANALYTICS_EVENTS.INTRO_LINK_SENT, { metadata, user })
 }
 
-export function trackLeadStatusUpdated(metadata = {}) {
-  return trackAdminEvent(ANALYTICS_EVENTS.LEAD_STATUS_UPDATED, { metadata })
+export function trackLeadStatusUpdated(metadata = {}, user) {
+  return trackAdminEvent(ANALYTICS_EVENTS.LEAD_STATUS_UPDATED, { metadata, user })
 }

@@ -5,6 +5,7 @@ import {
   trackIntakeBlockedTurnstile,
   trackIntakeSubmitted,
 } from "./analytics"
+import { isAnalyticsDisabledInStorage } from "./analytics/shouldTrack"
 
 export class SessionIntakeError extends Error {
   constructor(message, options = {}) {
@@ -37,6 +38,7 @@ function buildIntakePayload(session, formData, turnstileToken) {
     website_url: String(formData.get("website_url") ?? "").trim(),
     turnstileToken: String(turnstileToken ?? "").trim(),
     analyticsSessionId: getAnalyticsSessionId(),
+    analyticsDisabled: isAnalyticsDisabledInStorage(),
   }
 }
 

@@ -1,6 +1,9 @@
 import { legalLinks, navLinks } from "../../data/navigation"
+import { useDeveloperAnalyticsOptOutGesture } from "../../hooks/useDeveloperAnalyticsOptOutGesture"
 
 export default function Footer() {
+  const handleDeveloperGesture = useDeveloperAnalyticsOptOutGesture()
+
   return (
     <footer className="border-t border-white/8 bg-black/20">
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-12 sm:px-6 sm:py-10 lg:px-8">
@@ -36,7 +39,11 @@ export default function Footer() {
               </a>
             ))}
           </div>
-          <p className="text-sm text-muted">
+          <p
+            className="text-sm text-muted"
+            onClick={handleDeveloperGesture}
+            title="Bryant Labs"
+          >
             © {new Date().getFullYear()} Bryant Labs. All rights reserved.
           </p>
         </div>

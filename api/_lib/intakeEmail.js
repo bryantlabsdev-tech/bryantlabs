@@ -84,6 +84,7 @@ export function readIntakePayload(body) {
     websiteUrl: String(body.website_url ?? body.websiteUrl ?? "").trim(),
     turnstileToken: String(body.turnstileToken ?? "").trim(),
     analyticsSessionId: String(body.analyticsSessionId ?? "").trim(),
+    analyticsDisabled: Boolean(body.analyticsDisabled),
   }
 }
 

@@ -30,16 +30,30 @@ export async function insertConsultationLead(row) {
   }
 }
 
+import { shouldTrackServerAnalytics } from "./shouldTrackAnalytics.js"
+
 export async function trackServerSiteEvent({
   eventName,
   pagePath = "/#contact",
   metadata = {},
   sessionId,
   userAgent,
+  email,
+  analyticsDisabled = false,
 }) {
   const supabase = getServerSupabaseClient()
 
   if (!supabase || !eventName) {
+    return
+  }
+
+  if (
+    !shouldTrackServerAnalytics({
+      email,
+      userAgent,
+      analyticsDisabled,
+    })
+  ) {
     return
   }
 

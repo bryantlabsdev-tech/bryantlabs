@@ -1,5 +1,6 @@
 import { Outlet, useLocation } from "react-router-dom"
 import AnalyticsPageTracker from "../analytics/AnalyticsPageTracker"
+import DeveloperAnalyticsOptOut from "../analytics/DeveloperAnalyticsOptOut"
 import MarketingStructuredData from "../seo/MarketingStructuredData"
 import { siteSeo } from "../../config/seo"
 import { usePageMeta } from "../../hooks/usePageMeta"
@@ -22,6 +23,7 @@ export default function SiteLayout() {
     <div className="relative min-h-screen overflow-x-hidden">
       <MarketingStructuredData />
       <Background />
+      <DeveloperAnalyticsOptOut />
       <AnalyticsPageTracker />
       <Navbar />
       <main>
