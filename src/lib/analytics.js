@@ -7,6 +7,9 @@ export const ANALYTICS_EVENTS = {
   CTA_CLICK: "cta_click",
   INTAKE_STARTED: "intake_started",
   INTAKE_SUBMITTED: "intake_submitted",
+  INTAKE_BLOCKED_HONEYPOT: "intake_blocked_honeypot",
+  INTAKE_BLOCKED_TURNSTILE: "intake_blocked_turnstile",
+  INTAKE_BLOCKED_RATE_LIMIT: "intake_blocked_rate_limit",
   INTRO_LINK_SENT: "intro_link_sent",
   LEAD_STATUS_UPDATED: "lead_status_updated",
 }
@@ -181,6 +184,27 @@ export function trackIntakeStarted(metadata = {}) {
 
 export function trackIntakeSubmitted(metadata = {}) {
   return trackEvent(ANALYTICS_EVENTS.INTAKE_SUBMITTED, {
+    pagePath: "/#contact",
+    metadata,
+  })
+}
+
+export function trackIntakeBlockedHoneypot(metadata = {}) {
+  return trackEvent(ANALYTICS_EVENTS.INTAKE_BLOCKED_HONEYPOT, {
+    pagePath: "/#contact",
+    metadata,
+  })
+}
+
+export function trackIntakeBlockedTurnstile(metadata = {}) {
+  return trackEvent(ANALYTICS_EVENTS.INTAKE_BLOCKED_TURNSTILE, {
+    pagePath: "/#contact",
+    metadata,
+  })
+}
+
+export function trackIntakeBlockedRateLimit(metadata = {}) {
+  return trackEvent(ANALYTICS_EVENTS.INTAKE_BLOCKED_RATE_LIMIT, {
     pagePath: "/#contact",
     metadata,
   })

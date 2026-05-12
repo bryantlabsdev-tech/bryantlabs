@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
 import { Mail, Send } from "lucide-react"
 import { introCallSchedulingCopy, introCallTitle } from "../../config/scheduling"
 import { consultationEngagements } from "../../data/consultation"
@@ -18,6 +18,8 @@ import {
 } from "../../lib/submitSessionIntake"
 import { trackIntakeStarted } from "../../lib/analytics"
 import Button from "../ui/Button"
+import TurnstileWidget from "../ui/TurnstileWidget"
+import { isTurnstileConfigured } from "../../lib/turnstileConfig"
 import {
   FormField,
   FormOptionGroup,
@@ -62,6 +64,8 @@ export default function Contact() {
   const [platform, setPlatform] = useState("")
   const [budgetRange, setBudgetRange] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [turnstileToken, setTurnstileToken] = useState("")
+  const [turnstileResetSignal, setTurnstileResetSignal] = useState(0)
   const [fieldErrors, setFieldErrors] = useState({})
   const [submitError, setSubmitError] = useState("")
   const [successMessage, setSuccessMessage] = useState("")
@@ -82,6 +86,10 @@ export default function Contact() {
     hasTrackedIntakeStart.current = true
     void trackIntakeStarted()
   }
+
+  const handleTurnstileTokenChange = useCallback((token) => {
+    setTurnstileToken(token)
+  }, [])
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -106,6 +114,11 @@ export default function Contact() {
       return
     }
 
+    if (isTurnstileConfigured() && !turnstileToken) {
+      setSubmitError("Complete the verification check before submitting.")
+      return
+    }
+
     setFieldErrors({})
     setIsSubmitting(true)
 
@@ -114,6 +127,7 @@ export default function Contact() {
       const { success, checkoutUrl } = await submitSessionIntake({
         session: selectedSession,
         formData,
+        turnstileToken,
       })
 
       console.log("Consultation lead saved:", success)
@@ -128,6 +142,12 @@ export default function Contact() {
     } catch (error) {
       if (error instanceof SessionIntakeError) {
         setSubmitError(error.message)
+
+        if (error.code === "turnstile_failed") {
+          setTurnstileToken("")
+          setTurnstileResetSignal((current) => current + 1)
+        }
+
         console.error("Consultation intake failed:", error.cause ?? error)
         return
       }
@@ -299,6 +319,22 @@ export default function Contact() {
                   />
                 </FormSection>
 
+                <div className="sr-only" aria-hidden="true">
+                  <label htmlFor="website_url">Website</label>
+                  <input
+                    id="website_url"
+                    name="website_url"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                  />
+                </div>
+
+                <TurnstileWidget
+                  onTokenChange={handleTurnstileTokenChange}
+                  resetSignal={turnstileResetSignal}
+                />
+
                 {submitError ? (
                   <p
                     className="rounded-2xl border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-100"
@@ -338,7 +374,10 @@ export default function Contact() {
                 <Button
                   type="submit"
                   className="w-full sm:w-auto"
-                  disabled={isSubmitting}
+                  disabled={
+                    isSubmitting ||
+                    (isTurnstileConfigured() && !turnstileToken)
+                  }
                   analyticsCta={intakeSubmitCta}
                 >
                   {isSubmitting ? "Submitting project intake..." : intakeSubmitCta}

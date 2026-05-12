@@ -1,23 +1,27 @@
-import { sendIntakeConfirmationEmail } from "./sendIntakeConfirmationEmail"
-import { trackIntakeSubmitted } from "./analytics"
-import { getSupabaseClient } from "./supabaseClient"
+import {
+  getAnalyticsSessionId,
+  trackIntakeBlockedHoneypot,
+  trackIntakeBlockedRateLimit,
+  trackIntakeBlockedTurnstile,
+  trackIntakeSubmitted,
+} from "./analytics"
 
 export class SessionIntakeError extends Error {
   constructor(message, options = {}) {
     super(message)
     this.name = "SessionIntakeError"
+    this.code = options.code
     this.cause = options.cause
   }
 }
 
-function buildIntakePayload(session, formData) {
+function buildIntakePayload(session, formData, turnstileToken) {
   return {
-    session: {
-      id: session.id,
-      name: session.name,
-      priceLabel: session.priceLabel,
-      priceCents: session.priceCents,
-    },
+    sessionId: session.id,
+    sessionName: session.name,
+    sessionPriceCents: session.priceCents,
+    sessionPriceLabel: session.priceLabel,
+    planningSession: session.name,
     fullName: String(formData.get("fullName") ?? "").trim(),
     email: String(formData.get("email") ?? "").trim(),
     company: String(formData.get("company") ?? "").trim(),
@@ -26,66 +30,56 @@ function buildIntakePayload(session, formData) {
     coreFeatures: String(formData.get("coreFeatures") ?? "").trim(),
     platform: String(formData.get("platform") ?? "").trim(),
     timeline: String(formData.get("timeline") ?? "").trim(),
-    budget: String(formData.get("budget") ?? "").trim(),
-    references: String(formData.get("references") ?? "").trim(),
-    notes: String(formData.get("notes") ?? "").trim(),
+    budgetRange: String(formData.get("budget") ?? "").trim(),
+    referenceLinks: String(formData.get("references") ?? "").trim(),
+    additionalNotes: String(formData.get("notes") ?? "").trim(),
     submittedAt: new Date().toISOString(),
+    website_url: String(formData.get("website_url") ?? "").trim(),
+    turnstileToken: String(turnstileToken ?? "").trim(),
+    analyticsSessionId: getAnalyticsSessionId(),
   }
 }
 
-function mapIntakeToLeadRow(intake, session) {
-  return {
-    full_name: intake.fullName,
-    email: intake.email,
-    company_brand: intake.company || null,
-    selected_session_id: session.id,
-    selected_session_name: session.name,
-    selected_session_price_cents: session.priceCents,
-    selected_session_price_label: session.priceLabel,
-    project_summary: intake.projectSummary,
-    audience: intake.audience,
-    core_features: intake.coreFeatures,
-    platform_needed: intake.platform || null,
-    desired_timeline: intake.timeline,
-    budget_range: intake.budget || null,
-    reference_links: intake.references || null,
-    additional_notes: intake.notes || null,
-    status: "new",
-    stripe_customer_email: intake.email,
-  }
-}
+export async function submitSessionIntake({ session, formData, turnstileToken }) {
+  const payload = buildIntakePayload(session, formData, turnstileToken)
 
-export async function submitSessionIntake({ session, formData }) {
-  const intake = buildIntakePayload(session, formData)
-  const supabase = getSupabaseClient()
-
-  const { error } = await supabase
-    .from("consultation_leads")
-    .insert([mapIntakeToLeadRow(intake, session)])
-
-  if (error) {
-    throw new SessionIntakeError(
-      "We could not save your intake request. Please try again in a moment.",
-      { cause: error },
-    )
-  }
-
-  await trackIntakeSubmitted({
-    session_id: session.id,
+  const response = await fetch("/api/submit-intake", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
   })
 
-  await sendIntakeConfirmationEmail(intake)
+  const details = await response.json().catch(() => ({}))
 
-  // TODO: After intake review, email the complimentary intro-call Calendly link from
-  // scheduling config instead of exposing public self-serve booking on the site.
-  // TODO: Store Calendly event URLs in config (or env) for intro, Discovery, and
-  // Product Strategy sessions.
-  // TODO: Add paid Calendly or Stripe-backed scheduling for Discovery and Product
-  // Strategy once payments are integrated.
+  if (response.ok) {
+    if (payload.website_url) {
+      await trackIntakeBlockedHoneypot()
+    } else {
+      await trackIntakeSubmitted({
+        session_id: session.id,
+      })
+    }
 
-  return {
-    success: true,
-    intake,
-    checkoutUrl: null,
+    return {
+      success: true,
+      intake: payload,
+      checkoutUrl: null,
+    }
   }
+
+  if (details.code === "rate_limited") {
+    await trackIntakeBlockedRateLimit()
+  } else if (details.code === "turnstile_failed") {
+    await trackIntakeBlockedTurnstile()
+  }
+
+  throw new SessionIntakeError(
+    details.error ?? "We could not save your intake request. Please try again in a moment.",
+    {
+      code: details.code,
+      cause: details,
+    },
+  )
 }
