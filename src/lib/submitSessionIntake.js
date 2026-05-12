@@ -49,6 +49,7 @@ function mapIntakeToLeadRow(intake, session) {
     budget_range: intake.budget || null,
     reference_links: intake.references || null,
     additional_notes: intake.notes || null,
+    status: "new",
     stripe_customer_email: intake.email,
   }
 }

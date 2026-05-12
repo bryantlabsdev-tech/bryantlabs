@@ -15,6 +15,10 @@ async function fetchConsultationLeads() {
   return data ?? []
 }
 
+function replaceLead(leads, nextLead) {
+  return leads.map((lead) => (lead.id === nextLead.id ? nextLead : lead))
+}
+
 export function useConsultationLeads() {
   const [leads, setLeads] = useState([])
   const [loading, setLoading] = useState(true)
@@ -91,9 +95,25 @@ export function useConsultationLeads() {
       throw updateError
     }
 
-    setLeads((current) =>
-      current.map((lead) => (lead.id === leadId ? data : lead)),
-    )
+    setLeads((current) => replaceLead(current, data))
+
+    return data
+  }, [])
+
+  const updateLeadNotes = useCallback(async (leadId, adminNotes) => {
+    const supabase = getSupabaseClient()
+    const { data, error: updateError } = await supabase
+      .from("consultation_leads")
+      .update({ admin_notes: adminNotes })
+      .eq("id", leadId)
+      .select("*")
+      .single()
+
+    if (updateError) {
+      throw updateError
+    }
+
+    setLeads((current) => replaceLead(current, data))
 
     return data
   }, [])
@@ -104,5 +124,6 @@ export function useConsultationLeads() {
     error,
     reloadLeads: () => loadLeads({ showLoading: true }),
     updateLeadStatus,
+    updateLeadNotes,
   }
 }
