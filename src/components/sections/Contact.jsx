@@ -370,10 +370,10 @@ export default function Contact() {
                     Email
                   </p>
                   <a
-                    href="mailto:bryantlabs.dev@gmail.com"
+                    href="mailto:projects@bryantlabs.dev"
                     className="mt-1 block text-base text-white transition hover:text-cyan-200"
                   >
-                    bryantlabs.dev@gmail.com
+                    projects@bryantlabs.dev
                   </a>
                 </div>
               </div>

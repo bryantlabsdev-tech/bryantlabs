@@ -1,3 +1,4 @@
+import { sendIntakeConfirmationEmail } from "./sendIntakeConfirmationEmail"
 import { getSupabaseClient } from "./supabaseClient"
 
 export class SessionIntakeError extends Error {
@@ -66,6 +67,8 @@ export async function submitSessionIntake({ session, formData }) {
       { cause: error },
     )
   }
+
+  await sendIntakeConfirmationEmail(intake)
 
   // TODO: After intake review, email the complimentary intro-call Calendly link from
   // scheduling config instead of exposing public self-serve booking on the site.

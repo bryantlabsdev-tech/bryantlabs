@@ -41,7 +41,7 @@ export const sessionCreditCopy =
   "Paid discovery and strategy session fees are credited toward your project kickoff deposit when you move forward with a build. Development is structured in milestone-based payments after planning and an approved roadmap."
 
 export const sessionSuccessMessage =
-  "Your project intake was received. Bryant Labs will review your details and email you a link to schedule your free intro call."
+  "Your intake was received. Bryant Labs will review your details and follow up by email with next steps."
 
 export const sessionSidebarNote =
   "Designed for founders, businesses, and creators who want software built without managing developers themselves. Intake and intro calls are complimentary; paid planning sessions are scheduled after qualification."
