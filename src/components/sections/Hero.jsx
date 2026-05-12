@@ -31,19 +31,9 @@ export default function Hero() {
             </ScrollReveal>
 
             <ScrollReveal delay={0.1}>
-              <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted sm:text-lg lg:text-xl">
-                We build modern software products — from mobile apps and
-                dashboards to SaaS platforms, automation workflows, and AI-powered
-                tools.
-              </p>
-              <p className="mt-4 max-w-2xl text-base leading-relaxed text-white/70">
-                We handle the entire process — from planning and design to
-                development and launch — so you can stay focused on the vision,
-                not the technical work.
-              </p>
-              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted">
-                No technical background required. You bring the idea — we handle
-                the execution.
+              <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">
+                We build mobile apps, dashboards, SaaS platforms, automation
+                workflows, and AI-powered tools—from planning through launch.
               </p>
             </ScrollReveal>
 
@@ -114,9 +104,8 @@ export default function Hero() {
 
                 <div className="rounded-2xl border border-white/8 bg-gradient-to-br from-indigo-500/15 to-cyan-400/10 p-4">
                   <p className="text-sm text-white/75">
-                    From concept to launch, planning, design, development, and
-                    rollout are managed for you — with room to refine as the
-                    product takes shape.
+                    Planning, design, development, and rollout in one studio
+                    lane—without adding another tool stack to manage.
                   </p>
                 </div>
               </div>

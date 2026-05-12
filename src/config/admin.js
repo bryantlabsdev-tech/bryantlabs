@@ -1,4 +1,5 @@
-export const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL?.trim().toLowerCase() ?? ""
+export const CLIENT_ADMIN_EMAIL =
+  import.meta.env.VITE_ADMIN_EMAIL?.trim().toLowerCase() ?? ""
 
 export const LEAD_STATUSES = [
   { value: "new", label: "New" },
@@ -79,11 +80,11 @@ export function getLeadStatusStyles(status, variant = "select") {
 }
 
 export function isApprovedAdminEmail(email) {
-  if (!ADMIN_EMAIL || !email) {
+  if (!CLIENT_ADMIN_EMAIL || !email) {
     return false
   }
 
-  return email.trim().toLowerCase() === ADMIN_EMAIL
+  return email.trim().toLowerCase() === CLIENT_ADMIN_EMAIL
 }
 
 export function buildLeadMetrics(leads) {

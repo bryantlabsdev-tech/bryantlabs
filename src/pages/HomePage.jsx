@@ -5,7 +5,6 @@ import Pricing from "../components/sections/Pricing"
 import Process from "../components/sections/Process"
 import Support from "../components/sections/Support"
 import Services from "../components/sections/Services"
-import Testimonials from "../components/sections/Testimonials"
 import ErrorBoundary from "../components/ui/ErrorBoundary"
 
 export default function HomePage() {
@@ -28,9 +27,6 @@ export default function HomePage() {
       </ErrorBoundary>
       <ErrorBoundary sectionName="Support">
         <Support />
-      </ErrorBoundary>
-      <ErrorBoundary sectionName="Testimonials">
-        <Testimonials />
       </ErrorBoundary>
       <ErrorBoundary sectionName="Contact">
         <Contact />

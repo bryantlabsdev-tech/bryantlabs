@@ -1,5 +1,5 @@
-export const primaryCta = "Start Discovery"
-export const discoveryRequestCta = "Start Your Project Intake"
+export const primaryCta = "Start Project Intake"
+export const discoveryRequestCta = "Start Project Intake"
 export const intakeSubmitCta = "Submit Free Intake"
 export const secondaryCta = "View Projects"
 
@@ -13,7 +13,7 @@ export const strategySessions = [
     duration: "30 minutes",
     stripePriceId: null,
     description:
-      "A focused session for deeper project discussion, planning, workflows, requirements, and recommendations.",
+      "Focused planning for workflows, requirements, and recommendations.",
   },
   {
     id: "strategy-60",
@@ -24,24 +24,24 @@ export const strategySessions = [
     duration: "60 minutes",
     stripePriceId: null,
     description:
-      "A deep-dive planning session covering technical architecture, roadmap prioritization, scaling, and implementation strategy.",
+      "Architecture, roadmap prioritization, scaling, and implementation strategy.",
   },
 ]
 
 export const sessionValueCopy =
-  "Start with a free project intake. Bryant Labs reviews your details, schedules a complimentary intro call, and recommends the right planning session before any development begins."
+  "Share your project details and Bryant Labs will follow up with next steps after review."
 
 export const sessionIntakeCopy =
-  "This intake is free and used for qualification and project understanding. It is not an instant booking or the start of development."
+  "Free intake for qualification only—not instant booking or development."
 
 export const sessionAfterSubmitCopy =
-  "After submission, Bryant Labs reviews your intake and emails a scheduling link for your complimentary intro call."
+  "After submission, we review your intake and email a link for your complimentary intro call."
 
 export const sessionCreditCopy =
-  "Paid discovery and strategy session fees are credited toward your project kickoff deposit when you move forward with a build. Development is structured in milestone-based payments after planning and an approved roadmap."
+  "Paid discovery or strategy credits toward kickoff if you proceed with a build."
 
 export const sessionSuccessMessage =
-  "Your intake was received. Bryant Labs will review your details and follow up by email with next steps."
+  "Your intake was received. Bryant Labs will follow up by email with next steps."
 
 export const sessionSidebarNote =
-  "Designed for founders, businesses, and creators who want software built without managing developers themselves. Intake and intro calls are complimentary; paid planning sessions are scheduled after qualification."
+  "For founders, businesses, and creators who want software built without managing developers themselves."

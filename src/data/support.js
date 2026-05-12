@@ -1,15 +1,14 @@
 export const supportIntroCopy =
-  "Modern software requires ongoing iteration, support, and optimization after launch."
+  "Ongoing iteration, maintenance, and product support after launch."
 
 export const supportPartnerCopy =
-  "We continue supporting products long after deployment — as a long-term technical partner, not a one-time build shop."
+  "Stay with Bryant Labs as a technical partner after the first release."
 
 export const supportEngagementsTitle = "How support engagements work"
 
 export const supportEngagementsPoints = [
-  "Initial product builds are structured as milestone-based projects with phased payments tied to development progress.",
-  "After launch, clients can continue with ongoing monthly support, optimization, and product development through one of our partnership plans.",
-  "Need occasional help instead? Bryant Labs also offers as-needed development and support engagements for existing products.",
+  "Initial builds stay milestone-based through launch.",
+  "After launch, choose a monthly support plan or as-needed help.",
 ]
 
 export const supportCapabilities = [
@@ -26,20 +25,13 @@ export const supportCapabilities = [
 export const supportPlans = [
   {
     name: "Essential Support",
-    description:
-      "A monthly partnership for live products that need steady reliability, maintenance, and a dedicated studio lane without a full in-house team.",
-    features: [
-      "Bug fixes",
-      "Minor updates",
-      "Monitoring",
-      "Email support",
-    ],
+    description: "Steady maintenance and reliability for live products.",
+    features: ["Bug fixes", "Minor updates", "Monitoring", "Email support"],
     highlighted: false,
   },
   {
     name: "Growth Support",
-    description:
-      "A recurring retainer for products that need regular improvement, optimization, and prioritized access to Bryant Labs as an ongoing product partner.",
+    description: "Regular improvements and prioritized product support.",
     features: [
       "Ongoing feature improvements",
       "Optimization",
@@ -50,8 +42,7 @@ export const supportPlans = [
   },
   {
     name: "Dedicated Partnership",
-    description:
-      "A higher-touch monthly partnership for teams treating Bryant Labs as their long-term product and engineering studio.",
+    description: "Higher-touch partnership for long-term product development.",
     features: [
       "Long-term product development",
       "Scaling support",

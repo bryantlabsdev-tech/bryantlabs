@@ -1,5 +1,6 @@
 import { useState } from "react"
 import AdminAnalytics from "../../components/admin/AdminAnalytics"
+import AdminOps from "../../components/admin/AdminOps"
 import LeadDetailDrawer from "../../components/admin/LeadDetailDrawer"
 import LeadMetrics from "../../components/admin/LeadMetrics"
 import LeadsEmptyState from "../../components/admin/LeadsEmptyState"
@@ -7,6 +8,7 @@ import LeadsTable from "../../components/admin/LeadsTable"
 import Button from "../../components/ui/Button"
 import GlassCard from "../../components/ui/GlassCard"
 import { useAdminAuth } from "../../hooks/useAdminAuth"
+import { useAppErrors } from "../../hooks/useAppErrors"
 import { useConsultationLeads } from "../../hooks/useConsultationLeads"
 import { usePageMeta } from "../../hooks/usePageMeta"
 import { useSiteAnalytics } from "../../hooks/useSiteAnalytics"
@@ -16,6 +18,7 @@ import { sendIntroLinkEmail } from "../../lib/sendIntroLinkEmail"
 const dashboardTabs = [
   { id: "leads", label: "Leads" },
   { id: "analytics", label: "Analytics" },
+  { id: "ops", label: "Ops" },
 ]
 
 export default function AdminDashboardPage() {
@@ -42,6 +45,16 @@ export default function AdminDashboardPage() {
     error: analyticsError,
     reloadAnalytics,
   } = useSiteAnalytics()
+  const {
+    errors: appErrors,
+    unresolvedCount,
+    loading: opsLoading,
+    error: opsError,
+    resolvingErrorId,
+    reloadErrors,
+    resolveError,
+    formatErrorTime,
+  } = useAppErrors()
   const [activeTab, setActiveTab] = useState("leads")
   const [selectedLead, setSelectedLead] = useState(null)
   const [updatingLeadId, setUpdatingLeadId] = useState(null)
@@ -137,6 +150,11 @@ export default function AdminDashboardPage() {
       return
     }
 
+    if (activeTab === "ops") {
+      reloadErrors()
+      return
+    }
+
     reloadLeads()
   }
 
@@ -148,12 +166,18 @@ export default function AdminDashboardPage() {
             Bryant Labs Admin
           </p>
           <h1 className="mt-3 text-3xl font-semibold text-gradient sm:text-4xl">
-            {activeTab === "analytics" ? "Site analytics" : "Consultation leads"}
+            {activeTab === "analytics"
+              ? "Site analytics"
+              : activeTab === "ops"
+                ? "System operations"
+                : "Consultation leads"}
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-muted">
             {activeTab === "analytics"
               ? "Review lightweight first-party traffic, intake funnel activity, and recent conversion events."
-              : "Track intake submissions, update pipeline status, and keep private follow-up notes in one place."}
+              : activeTab === "ops"
+                ? "Monitor recent API failures, email issues, and configuration problems without exposing secrets."
+                : "Track intake submissions, update pipeline status, and keep private follow-up notes in one place."}
           </p>
         </div>
 
@@ -165,7 +189,13 @@ export default function AdminDashboardPage() {
           <Button
             variant="secondary"
             onClick={handleRefresh}
-            disabled={activeTab === "analytics" ? analyticsLoading : loading}
+            disabled={
+              activeTab === "analytics"
+                ? analyticsLoading
+                : activeTab === "ops"
+                  ? opsLoading
+                  : loading
+            }
             className="w-full sm:w-auto"
           >
             Refresh
@@ -203,6 +233,18 @@ export default function AdminDashboardPage() {
             summary={summary}
             loading={analyticsLoading}
             error={analyticsError}
+          />
+        </div>
+      ) : activeTab === "ops" ? (
+        <div className="mt-8">
+          <AdminOps
+            errors={appErrors}
+            unresolvedCount={unresolvedCount}
+            loading={opsLoading}
+            error={opsError}
+            resolvingErrorId={resolvingErrorId}
+            onResolveError={resolveError}
+            formatErrorTime={formatErrorTime}
           />
         </div>
       ) : (

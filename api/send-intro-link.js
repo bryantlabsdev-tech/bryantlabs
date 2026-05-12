@@ -1,5 +1,8 @@
 import { createClient } from "@supabase/supabase-js"
 import nodemailer from "nodemailer"
+import { getServerAdminEmail, isServerApprovedAdminEmail } from "./_lib/adminIdentity.js"
+import { logMissingEnvForRoute, routeEnvRequirements } from "./_lib/envCheck.js"
+import { logAppError } from "./_lib/logError.js"
 
 const smtpHost = "mail.privateemail.com"
 const smtpPort = 587
@@ -15,9 +18,7 @@ function escapeHtml(value) {
 }
 
 function getApprovedAdminEmail() {
-  return (process.env.ADMIN_EMAIL || process.env.VITE_ADMIN_EMAIL || "")
-    .trim()
-    .toLowerCase()
+  return getServerAdminEmail()
 }
 
 function getSupabaseConfig() {
@@ -107,20 +108,37 @@ async function verifyAdminRequest(req) {
   const accessToken = readAccessToken(req)
 
   if (!accessToken) {
+    await logAppError({
+      source: "send-intro-link",
+      severity: "warn",
+      message: "Intro link request missing admin access token.",
+      details: { reason: "missing_access_token" },
+    })
+
     return { ok: false, status: 401, error: "Unauthorized" }
   }
 
   const { url, anonKey } = getSupabaseConfig()
 
   if (!url || !anonKey) {
-    console.error("[Bryant Labs] Intro link auth env is not configured.")
+    await logAppError({
+      source: "send-intro-link",
+      message: "Intro link auth environment is not configured.",
+      details: { reason: "supabase_auth_env_missing" },
+    })
+
     return { ok: false, status: 503, error: "Auth service is not configured." }
   }
 
   const adminEmail = getApprovedAdminEmail()
 
   if (!adminEmail) {
-    console.error("[Bryant Labs] Approved admin email is not configured.")
+    await logAppError({
+      source: "send-intro-link",
+      message: "Approved admin email is not configured.",
+      details: { reason: "admin_email_missing" },
+    })
+
     return { ok: false, status: 503, error: "Admin access is not configured." }
   }
 
@@ -131,10 +149,30 @@ async function verifyAdminRequest(req) {
   } = await supabase.auth.getUser(accessToken)
 
   if (error || !user?.email) {
+    await logAppError({
+      source: "send-intro-link",
+      severity: "warn",
+      message: "Intro link admin authentication failed.",
+      details: {
+        reason: "admin_auth_failed",
+        error: error?.message ?? "missing_user_email",
+      },
+    })
+
     return { ok: false, status: 401, error: "Unauthorized" }
   }
 
-  if (user.email.trim().toLowerCase() !== adminEmail) {
+  if (!isServerApprovedAdminEmail(user.email)) {
+    await logAppError({
+      source: "send-intro-link",
+      severity: "warn",
+      message: "Intro link request rejected for non-approved admin.",
+      details: {
+        reason: "admin_forbidden",
+        adminEmail,
+      },
+    })
+
     return { ok: false, status: 403, error: "Forbidden" }
   }
 
@@ -153,19 +191,21 @@ export default async function handler(req, res) {
     return res.status(authResult.status).json({ error: authResult.error })
   }
 
-  const emailUser = process.env.EMAIL_USER
-  const emailPassword = process.env.EMAIL_PASSWORD
-  const calendlyIntroUrl = process.env.CALENDLY_INTRO_URL
+  const missingEnv = await logMissingEnvForRoute({
+    source: "send-intro-link",
+    keys: routeEnvRequirements["send-intro-link"],
+  })
 
-  if (!emailUser || !emailPassword) {
-    console.error("[Bryant Labs] Intro link email env is not configured.")
+  if (missingEnv.includes("EMAIL_USER") || missingEnv.includes("EMAIL_PASSWORD")) {
     return res.status(503).json({ error: "Email service is not configured." })
   }
 
-  if (!calendlyIntroUrl) {
-    console.error("[Bryant Labs] CALENDLY_INTRO_URL is not configured.")
+  if (missingEnv.includes("CALENDLY_INTRO_URL")) {
     return res.status(503).json({ error: "Calendly intro link is not configured." })
   }
+
+  const emailUser = process.env.EMAIL_USER
+  const calendlyIntroUrl = process.env.CALENDLY_INTRO_URL
 
   const payload = readPayload(req.body ?? {})
   const missingFields = ["leadId", "fullName", "email"].filter((field) => !payload[field])
@@ -215,11 +255,15 @@ export default async function handler(req, res) {
       introLinkSent: true,
     })
   } catch (error) {
-    console.error("[Bryant Labs] Intro link email failed", {
-      leadId: payload.leadId,
-      recipient: payload.email,
-      adminEmail: authResult.user.email,
-      error: error.message,
+    await logAppError({
+      source: "send-intro-link",
+      message: "Intro link email failed to send.",
+      details: {
+        reason: "smtp_dispatch_failed",
+        error: error.message,
+        leadId: payload.leadId,
+        email: payload.email,
+      },
     })
 
     return res.status(502).json({

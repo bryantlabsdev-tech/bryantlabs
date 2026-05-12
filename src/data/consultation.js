@@ -1,70 +1,76 @@
-export const consultationFlowTitle = "How getting started works"
+export const projectForwardTitle = "How projects move forward"
 
-export const consultationFlowIntro =
-  "Every engagement begins with qualification and planning. Development starts only after strategy, scope, and milestones are aligned."
+export const projectForwardIntro =
+  "Qualify with a free intake, align on scope, then move into milestone-based delivery when the fit is right."
 
-export const consultationFlowSteps = [
+export const projectForwardSteps = [
   {
     step: "01",
-    title: "Submit intake",
+    title: "Free intake",
     description:
-      "Share your project context through a free intake form so Bryant Labs can understand goals, scope, and fit.",
+      "Share goals, scope, and constraints so Bryant Labs can review fit before any paid work.",
   },
   {
     step: "02",
     title: "Intro call",
     description:
-      "A complimentary introductory call to discuss objectives, timeline, and next steps — not a deep technical planning session.",
+      "A short complimentary call to confirm priorities, timeline, and next steps.",
   },
   {
     step: "03",
-    title: "Discovery or strategy session",
+    title: "Discovery or strategy",
     description:
-      "If we are aligned, move into a paid discovery or product strategy session for deeper planning, requirements, and recommendations.",
+      "If needed, a paid planning session sharpens requirements before a build quote.",
   },
   {
     step: "04",
-    title: "Proposal & milestones",
+    title: "Proposal + kickoff deposit",
     description:
-      "You receive a scoped proposal with a milestone roadmap, payment schedule, and kickoff deposit before build work begins.",
+      "Approved scope, milestones, and a 25% kickoff deposit before development begins.",
   },
   {
     step: "05",
-    title: "Development begins",
+    title: "Milestone-based build",
     description:
-      "Approved projects move into milestone-based development with phased delivery, review, and sign-off at each stage.",
+      "Development moves in approved phases with review and sign-off between milestones.",
+  },
+  {
+    step: "06",
+    title: "Final delivery",
+    description:
+      "Remaining balance is settled before launch, deployment, or handoff.",
   },
 ]
+
+export const consultationFlowTitle = projectForwardTitle
+export const consultationFlowIntro = projectForwardIntro
+export const consultationFlowSteps = projectForwardSteps
 
 export const consultationEngagements = [
   {
     id: "intake",
     name: "Free intake",
     priceLabel: "Free",
-    description:
-      "Submit the intake form at no cost so Bryant Labs can review your project and determine fit.",
+    description: "Project review and qualification at no cost.",
   },
   {
     id: "intro-call",
     name: "Intro call",
     priceLabel: "Free",
-    description:
-      "A short qualification call to discuss goals, timeline, and whether a deeper planning session makes sense.",
+    description: "Short call to confirm fit, goals, and next steps.",
   },
   {
     id: "discovery",
     name: "Paid discovery session",
     priceLabel: "$50",
     duration: "30 minutes",
-    description:
-      "A focused strategy session for deeper project discussion, workflows, requirements, and recommendations.",
+    description: "Focused planning for workflows, requirements, and recommendations.",
   },
   {
     id: "strategy",
     name: "Product strategy session",
     priceLabel: "$100",
     duration: "60 minutes",
-    description:
-      "A deep-dive planning session covering architecture, roadmap prioritization, scaling, and implementation strategy.",
+    description: "Deeper architecture, roadmap, and implementation planning.",
   },
 ]

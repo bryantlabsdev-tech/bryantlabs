@@ -1,5 +1,5 @@
 -- Bryant Labs consultation_leads RLS migration
--- Paste into Supabase SQL editor on an existing project.
+-- Run supabase/admin_identity.sql first, then paste into Supabase SQL editor.
 
 alter table public.consultation_leads enable row level security;
 
@@ -40,17 +40,11 @@ create policy "consultation_leads_admin_select"
 on public.consultation_leads
 for select
 to authenticated
-using (
-  lower(coalesce(auth.jwt() ->> 'email', '')) = lower('projects@bryantlabs.dev')
-);
+using (public.is_approved_bryantlabs_admin());
 
 create policy "consultation_leads_admin_update"
 on public.consultation_leads
 for update
 to authenticated
-using (
-  lower(coalesce(auth.jwt() ->> 'email', '')) = lower('projects@bryantlabs.dev')
-)
-with check (
-  lower(coalesce(auth.jwt() ->> 'email', '')) = lower('projects@bryantlabs.dev')
-);
+using (public.is_approved_bryantlabs_admin())
+with check (public.is_approved_bryantlabs_admin());

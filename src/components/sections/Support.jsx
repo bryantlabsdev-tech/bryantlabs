@@ -1,12 +1,5 @@
 import { Check } from "lucide-react"
-import {
-  supportCapabilities,
-  supportEngagementsPoints,
-  supportEngagementsTitle,
-  supportIntroCopy,
-  supportPartnerCopy,
-  supportPlans,
-} from "../../data/support"
+import { supportIntroCopy, supportPlans } from "../../data/support"
 import { primaryCta } from "../../data/sessions"
 import Button from "../ui/Button"
 import GlassCard from "../ui/GlassCard"
@@ -18,41 +11,12 @@ export default function Support() {
     <section id="support" className="py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="Ongoing Support"
+          eyebrow="Ongoing support"
           title="A technical partner after launch"
-          description={`${supportIntroCopy} ${supportPartnerCopy}`}
+          description={supportIntroCopy}
         />
 
-        <ScrollReveal className="mt-10 flex flex-wrap gap-2">
-          {supportCapabilities.map((capability) => (
-            <span
-              key={capability}
-              className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-white/75"
-            >
-              {capability}
-            </span>
-          ))}
-        </ScrollReveal>
-
-        <ScrollReveal className="mt-10 sm:mt-14">
-          <GlassCard hover={false} className="p-5 sm:p-8">
-            <h3 className="text-xl font-semibold text-white">
-              {supportEngagementsTitle}
-            </h3>
-            <ul className="mt-6 grid gap-3 lg:grid-cols-3">
-              {supportEngagementsPoints.map((point) => (
-                <li
-                  key={point}
-                  className="rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-4 text-sm leading-relaxed text-white/75"
-                >
-                  {point}
-                </li>
-              ))}
-            </ul>
-          </GlassCard>
-        </ScrollReveal>
-
-        <div className="mt-10 grid gap-5 sm:mt-14 sm:gap-6 lg:grid-cols-3">
+        <div className="mt-10 grid gap-5 sm:mt-12 sm:gap-6 lg:grid-cols-3">
           {supportPlans.map((plan, index) => (
             <ScrollReveal key={plan.name} delay={index * 0.06}>
               <GlassCard

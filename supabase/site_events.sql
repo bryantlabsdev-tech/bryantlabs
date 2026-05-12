@@ -1,5 +1,5 @@
 -- Bryant Labs first-party analytics
--- Paste into Supabase SQL editor on an existing project.
+-- Run supabase/admin_identity.sql first, then paste into Supabase SQL editor.
 
 create table if not exists public.site_events (
   id uuid primary key default gen_random_uuid(),
@@ -38,6 +38,4 @@ create policy "site_events_admin_select"
 on public.site_events
 for select
 to authenticated
-using (
-  lower(coalesce(auth.jwt() ->> 'email', '')) = lower('projects@bryantlabs.dev')
-);
+using (public.is_approved_bryantlabs_admin());

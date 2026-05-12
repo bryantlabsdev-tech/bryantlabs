@@ -3,6 +3,8 @@ import {
   readIntakePayload,
   sendIntakeEmails,
 } from "./_lib/intakeEmail.js"
+import { logMissingEnvForRoute, routeEnvRequirements } from "./_lib/envCheck.js"
+import { logAppError } from "./_lib/logError.js"
 import {
   checkIntakeRateLimit,
   getIntakeRateLimitKey,
@@ -14,6 +16,8 @@ const TURNSTILE_FAILURE_MESSAGE =
   "We couldn’t verify the submission. Please try again."
 const RATE_LIMIT_MESSAGE =
   "Too many attempts. Please wait a few minutes and try again."
+const SAVE_FAILURE_MESSAGE =
+  "We couldn’t save your intake. Please try again."
 
 function getRequestUserAgent(req) {
   return String(req.headers["user-agent"] ?? "").slice(0, 512)
@@ -24,6 +28,12 @@ export default async function handler(req, res) {
     res.setHeader("Allow", "POST")
     return res.status(405).json({ error: "Method not allowed" })
   }
+
+  await logMissingEnvForRoute({
+    source: "submit-intake",
+    keys: routeEnvRequirements["submit-intake"],
+    severity: "warn",
+  })
 
   const body = req.body ?? {}
   const payload = readIntakePayload(body)
@@ -53,6 +63,16 @@ export default async function handler(req, res) {
       ...analyticsContext,
     })
 
+    await logAppError({
+      source: "submit-intake",
+      severity: "warn",
+      message: "Intake submission blocked by rate limit.",
+      details: {
+        reason: "rate_limited",
+        sessionId: payload.analyticsSessionId || null,
+      },
+    })
+
     return res.status(429).json({
       error: RATE_LIMIT_MESSAGE,
       code: "rate_limited",
@@ -69,6 +89,17 @@ export default async function handler(req, res) {
       eventName: "intake_blocked_turnstile",
       metadata: { reason: "turnstile_failed" },
       ...analyticsContext,
+    })
+
+    await logAppError({
+      source: "submit-intake",
+      severity: "warn",
+      message: "Intake submission failed Turnstile verification.",
+      details: {
+        reason: "turnstile_failed",
+        turnstileError: turnstileResult.error ?? null,
+        skipped: Boolean(turnstileResult.skipped),
+      },
     })
 
     return res.status(400).json({
@@ -109,12 +140,19 @@ export default async function handler(req, res) {
   try {
     await insertConsultationLead(mapIntakePayloadToLeadRow(payload))
   } catch (error) {
-    console.error("[Bryant Labs] Intake lead insert failed", {
-      error: error.message,
+    await logAppError({
+      source: "submit-intake",
+      message: "Supabase intake insert failed.",
+      details: {
+        reason: "supabase_insert_failed",
+        error: error.message,
+        email: payload.email,
+      },
     })
 
     return res.status(502).json({
-      error: "We could not save your intake request. Please try again in a moment.",
+      error: SAVE_FAILURE_MESSAGE,
+      code: "save_failed",
     })
   }
 
@@ -123,22 +161,45 @@ export default async function handler(req, res) {
   try {
     emailResult = await sendIntakeEmails(payload)
   } catch (error) {
-    console.error("[Bryant Labs] Intake email dispatch failed after save", {
-      error: error.message,
+    await logAppError({
+      source: "submit-intake",
+      message: "Intake email dispatch failed after lead save.",
+      details: {
+        reason: "smtp_dispatch_failed",
+        error: error.message,
+        email: payload.email,
+      },
     })
 
-    return res.status(502).json({
-      error: "Client confirmation email could not be sent.",
+    return res.status(200).json({
+      success: true,
       customerConfirmationSent: false,
       internalNotificationSent: false,
     })
   }
 
   if (!emailResult.customerConfirmationSent) {
-    return res.status(502).json({
-      error: "Client confirmation email could not be sent.",
-      customerConfirmationSent: false,
-      internalNotificationSent: emailResult.internalNotificationSent,
+    await logAppError({
+      source: "submit-intake",
+      message: "Client confirmation email failed after lead save.",
+      details: {
+        reason: "customer_confirmation_failed",
+        email: payload.email,
+        internalNotificationSent: emailResult.internalNotificationSent,
+      },
+    })
+  }
+
+  if (!emailResult.internalNotificationSent) {
+    await logAppError({
+      source: "submit-intake",
+      severity: "warn",
+      message: "Internal intake notification email failed after lead save.",
+      details: {
+        reason: "internal_notification_failed",
+        email: payload.email,
+        customerConfirmationSent: emailResult.customerConfirmationSent,
+      },
     })
   }
 

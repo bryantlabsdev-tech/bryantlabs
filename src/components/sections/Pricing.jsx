@@ -1,10 +1,5 @@
 import { Check } from "lucide-react"
-import {
-  billingIntro,
-  billingPhases,
-  billingPoints,
-  billingTitle,
-} from "../../data/billing"
+import { pricingPaymentNote } from "../../data/billing"
 import { pricingIntro, pricingTiers } from "../../data/pricing"
 import { primaryCta } from "../../data/sessions"
 import Button from "../ui/Button"
@@ -22,7 +17,7 @@ export default function Pricing() {
           description={pricingIntro}
         />
 
-        <div className="mt-10 grid gap-5 sm:mt-14 sm:gap-6 lg:grid-cols-3">
+        <div className="mt-10 grid gap-5 sm:mt-12 sm:gap-6 lg:grid-cols-3">
           {pricingTiers.map((tier, index) => (
             <ScrollReveal key={tier.name} delay={index * 0.06}>
               <GlassCard
@@ -69,44 +64,10 @@ export default function Pricing() {
           ))}
         </div>
 
-        <ScrollReveal className="mt-10 sm:mt-14">
-          <GlassCard hover={false} className="p-5 sm:p-8">
-            <h3 className="text-xl font-semibold text-white">{billingTitle}</h3>
-            <p className="mt-3 max-w-3xl text-sm leading-relaxed text-muted sm:text-base">
-              {billingIntro}
-            </p>
-            <ol className="mt-8 grid gap-4 lg:grid-cols-3">
-              {billingPhases.map((phase, index) => (
-                <li
-                  key={phase.title}
-                  className="rounded-2xl border border-white/8 bg-white/[0.03] p-5"
-                >
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-300/80">
-                    Step {index + 1}
-                  </p>
-                  <h4 className="mt-3 text-base font-semibold text-white">
-                    {phase.title}
-                  </h4>
-                  <p className="mt-2 text-sm leading-relaxed text-white/75">
-                    {phase.description}
-                  </p>
-                  <p className="mt-3 text-sm leading-relaxed text-muted">
-                    {phase.detail}
-                  </p>
-                </li>
-              ))}
-            </ol>
-            <ul className="mt-6 grid gap-3 sm:grid-cols-2">
-              {billingPoints.map((point) => (
-                <li
-                  key={point}
-                  className="rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3 text-sm leading-relaxed text-white/75"
-                >
-                  {point}
-                </li>
-              ))}
-            </ul>
-          </GlassCard>
+        <ScrollReveal className="mt-8 sm:mt-10">
+          <p className="max-w-3xl text-sm leading-relaxed text-muted">
+            {pricingPaymentNote}
+          </p>
         </ScrollReveal>
       </div>
     </section>

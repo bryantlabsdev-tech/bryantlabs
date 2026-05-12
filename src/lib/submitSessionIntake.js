@@ -76,7 +76,7 @@ export async function submitSessionIntake({ session, formData, turnstileToken })
   }
 
   throw new SessionIntakeError(
-    details.error ?? "We could not save your intake request. Please try again in a moment.",
+    details.error ?? "We couldn’t save your intake. Please try again.",
     {
       code: details.code,
       cause: details,

@@ -5,7 +5,6 @@ import { consultationEngagements } from "../../data/consultation"
 import {
   intakeSubmitCta,
   sessionAfterSubmitCopy,
-  sessionCreditCopy,
   sessionIntakeCopy,
   sessionSidebarNote,
   sessionSuccessMessage,
@@ -165,27 +164,17 @@ export default function Contact() {
     <section id="contact" className="py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="Getting started"
-          title="Submit your free project intake."
+          eyebrow="Project intake"
+          title="Tell us what you want to build."
           description={sessionValueCopy}
         />
 
         <div className="mt-10 grid gap-6 sm:mt-14 lg:grid-cols-[1.45fr_0.85fr]">
           <ScrollReveal>
             <GlassCard hover={false} className="p-5 sm:p-8">
-              <div className="space-y-2">
-                <p className="text-sm leading-relaxed text-muted">
-                  {sessionCreditCopy}
-                </p>
-                <p className="text-sm leading-relaxed text-white/70">
-                  {sessionIntakeCopy} {sessionAfterSubmitCopy}
-                </p>
-                <p className="text-sm leading-relaxed text-muted">
-                  Share the essentials below so Bryant Labs can review your
-                  project, schedule your intro call, and recommend the right
-                  planning session if we move forward together.
-                </p>
-              </div>
+              <p className="text-sm leading-relaxed text-muted">
+                {sessionIntakeCopy} {sessionAfterSubmitCopy}
+              </p>
 
               <form
                 className="mt-8 space-y-6 sm:space-y-8"
@@ -389,9 +378,7 @@ export default function Contact() {
 
           <ScrollReveal delay={0.08}>
             <GlassCard className="h-full p-5 sm:p-8">
-              <p className="text-sm font-medium text-white">
-                Consultation flow
-              </p>
+              <p className="text-sm font-medium text-white">What happens next</p>
               <p className="mt-2 text-sm leading-relaxed text-muted">
                 {sessionValueCopy}
               </p>
@@ -424,10 +411,6 @@ export default function Contact() {
                 ))}
               </div>
 
-              <p className="mt-6 text-sm leading-relaxed text-muted">
-                {sessionCreditCopy}
-              </p>
-
               <div className="mt-8 rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-4">
                 <p className="text-sm font-medium text-white">{introCallTitle}</p>
                 <p className="mt-2 text-sm leading-relaxed text-muted">
@@ -452,9 +435,7 @@ export default function Contact() {
                 </div>
               </div>
 
-              <p className="mt-8 rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3 text-sm text-white/75">
-                {sessionSidebarNote}
-              </p>
+              <p className="mt-8 text-sm text-white/75">{sessionSidebarNote}</p>
             </GlassCard>
           </ScrollReveal>
         </div>
