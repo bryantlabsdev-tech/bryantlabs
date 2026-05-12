@@ -301,6 +301,24 @@ export default function Contact() {
                   </p>
                 ) : null}
 
+                <p className="text-sm leading-relaxed text-muted">
+                  By submitting this form, you agree to our{" "}
+                  <a
+                    href="/privacy"
+                    className="text-white/80 underline underline-offset-4 transition hover:text-white"
+                  >
+                    Privacy Policy
+                  </a>{" "}
+                  and{" "}
+                  <a
+                    href="/terms"
+                    className="text-white/80 underline underline-offset-4 transition hover:text-white"
+                  >
+                    Terms
+                  </a>
+                  .
+                </p>
+
                 <Button
                   type="submit"
                   className="w-full sm:w-auto"

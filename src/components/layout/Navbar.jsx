@@ -11,7 +11,7 @@ export default function Navbar() {
   return (
     <header className="fixed inset-x-0 top-0 z-50">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        <a href="#" className="group flex items-center gap-3">
+        <a href="/" className="group flex items-center gap-3">
           <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-400 text-sm font-bold text-white shadow-[0_0_30px_-8px_rgba(99,102,241,0.8)]">
             BL
           </span>
@@ -34,7 +34,7 @@ export default function Navbar() {
         </nav>
 
         <motion.div className="hidden md:block" whileHover={{ y: -2 }}>
-          <Button href="#contact" variant="primary" className="px-4 py-2.5 text-xs sm:text-sm">
+          <Button href="/#contact" variant="primary" className="px-4 py-2.5 text-xs sm:text-sm">
             {primaryCta}
           </Button>
         </motion.div>
@@ -69,7 +69,7 @@ export default function Navbar() {
                 </a>
               ))}
               <Button
-                href="#contact"
+                href="/#contact"
                 variant="primary"
                 className="mt-2 w-full"
                 onClick={() => setOpen(false)}

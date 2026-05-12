@@ -48,8 +48,8 @@ export default function Hero() {
             </ScrollReveal>
 
             <ScrollReveal delay={0.15} className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <Button href="#contact">{discoveryRequestCta}</Button>
-              <Button href="#work" variant="secondary">
+              <Button href="/#contact">{discoveryRequestCta}</Button>
+              <Button href="/#work" variant="secondary">
                 {secondaryCta}
                 <ArrowRight className="h-4 w-4" />
               </Button>

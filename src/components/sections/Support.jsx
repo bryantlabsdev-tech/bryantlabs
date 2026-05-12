@@ -79,7 +79,7 @@ export default function Support() {
                   ))}
                 </ul>
                 <Button
-                  href="#contact"
+                  href="/#contact"
                   variant={plan.highlighted ? "primary" : "secondary"}
                   className="mt-8 w-full"
                 >

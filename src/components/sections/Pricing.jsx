@@ -57,7 +57,7 @@ export default function Pricing() {
                   ))}
                 </ul>
                 <Button
-                  href="#contact"
+                  href="/#contact"
                   variant={tier.highlighted ? "primary" : "secondary"}
                   className="mt-8 w-full"
                 >
