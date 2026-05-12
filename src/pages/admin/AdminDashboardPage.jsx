@@ -8,6 +8,7 @@ import Button from "../../components/ui/Button"
 import GlassCard from "../../components/ui/GlassCard"
 import { useAdminAuth } from "../../hooks/useAdminAuth"
 import { useConsultationLeads } from "../../hooks/useConsultationLeads"
+import { usePageMeta } from "../../hooks/usePageMeta"
 import { useSiteAnalytics } from "../../hooks/useSiteAnalytics"
 import { trackIntroLinkSent, trackLeadStatusUpdated } from "../../lib/analytics"
 import { sendIntroLinkEmail } from "../../lib/sendIntroLinkEmail"
@@ -18,6 +19,13 @@ const dashboardTabs = [
 ]
 
 export default function AdminDashboardPage() {
+  usePageMeta({
+    title: "Admin Dashboard | Bryant Labs",
+    description: "Private Bryant Labs admin dashboard.",
+    path: "/admin",
+    robots: "noindex, nofollow",
+  })
+
   const { session, userEmail, signOut } = useAdminAuth()
   const {
     leads,

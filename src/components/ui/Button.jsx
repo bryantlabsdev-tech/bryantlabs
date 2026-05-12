@@ -19,6 +19,10 @@ export default function Button({
   ...props
 }) {
   const classes = `inline-flex min-h-11 touch-manipulation items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${variants[variant]} ${className}`
+  const isExternal = typeof href === "string" && /^https?:\/\//.test(href)
+  const externalLinkProps = isExternal
+    ? { target: "_blank", rel: "noopener noreferrer" }
+    : {}
 
   const handleClick = (event) => {
     if (analyticsCta) {
@@ -36,6 +40,7 @@ export default function Button({
         whileTap={{ scale: 0.98 }}
         className={classes}
         onClick={handleClick}
+        {...externalLinkProps}
         {...props}
       >
         {children}

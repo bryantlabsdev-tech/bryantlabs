@@ -1,3 +1,4 @@
+import { useLocation } from "react-router-dom"
 import { usePageMeta } from "../../hooks/usePageMeta"
 import GlassCard from "../ui/GlassCard"
 
@@ -8,7 +9,13 @@ export default function LegalDocument({
   updatedAt,
   sections,
 }) {
-  usePageMeta({ title: metaTitle, description: metaDescription })
+  const { pathname } = useLocation()
+
+  usePageMeta({
+    title: metaTitle,
+    description: metaDescription,
+    path: pathname,
+  })
 
   return (
     <section className="py-28 sm:py-32">

@@ -1,13 +1,21 @@
 import { useState } from "react"
 import { Navigate } from "react-router-dom"
-import { ADMIN_EMAIL } from "../../config/admin"
-import { useAdminAuth } from "../../hooks/useAdminAuth"
 import AdminLayout from "../../components/admin/AdminLayout"
 import Button from "../../components/ui/Button"
 import GlassCard from "../../components/ui/GlassCard"
 import { FormField } from "../../components/ui/FormField"
+import { ADMIN_EMAIL } from "../../config/admin"
+import { useAdminAuth } from "../../hooks/useAdminAuth"
+import { usePageMeta } from "../../hooks/usePageMeta"
 
 export default function AdminLoginPage() {
+  usePageMeta({
+    title: "Admin Sign In | Bryant Labs",
+    description: "Private Bryant Labs admin access.",
+    path: "/admin/login",
+    robots: "noindex, nofollow",
+  })
+
   const { loading, isAuthenticated, signInWithMagicLink } = useAdminAuth()
   const [email, setEmail] = useState(ADMIN_EMAIL)
   const [submitting, setSubmitting] = useState(false)
