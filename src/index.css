@@ -16,11 +16,14 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
   }
 
   body {
     @apply bg-ink font-sans text-white antialiased;
     background-color: var(--color-ink);
+    overflow-x: hidden;
+    text-size-adjust: 100%;
   }
 
   ::selection {

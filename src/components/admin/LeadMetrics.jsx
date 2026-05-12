@@ -27,7 +27,7 @@ export default function LeadMetrics({ leads }) {
   const metrics = buildLeadMetrics(leads)
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-5">
       {metricCards.map((card, index) => {
         const value = metrics[card.key]
         const displayValue = card.format ? card.format(value) : value
@@ -41,12 +41,12 @@ export default function LeadMetrics({ leads }) {
           >
             <GlassCard
               hover={false}
-              className={`bg-gradient-to-br ${card.accent} p-5`}
+              className={`bg-gradient-to-br ${card.accent} p-4 sm:p-5`}
             >
               <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted">
                 {card.label}
               </p>
-              <p className="mt-3 text-3xl font-semibold text-white">{displayValue}</p>
+              <p className="mt-2 text-2xl font-semibold text-white sm:mt-3 sm:text-3xl">{displayValue}</p>
             </GlassCard>
           </motion.div>
         )

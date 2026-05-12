@@ -14,7 +14,7 @@ import SectionHeading from "../ui/SectionHeading"
 
 export default function Process() {
   return (
-    <section id="process" className="py-20 sm:py-24">
+    <section id="process" className="py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Consultation flow"
@@ -22,7 +22,7 @@ export default function Process() {
           description={consultationFlowIntro}
         />
 
-        <div className="mt-14 grid gap-5 md:grid-cols-2 xl:grid-cols-5">
+        <div className="mt-10 grid gap-4 sm:mt-14 sm:gap-5 md:grid-cols-2 xl:grid-cols-5">
           {processSteps.map((step, index) => (
             <ScrollReveal key={step.step} delay={index * 0.06}>
               <div className="relative h-full rounded-3xl border border-white/8 bg-white/[0.03] p-6">
@@ -40,8 +40,8 @@ export default function Process() {
           ))}
         </div>
 
-        <ScrollReveal className="mt-14">
-          <GlassCard hover={false} className="p-6 sm:p-8">
+        <ScrollReveal className="mt-10 sm:mt-14">
+          <GlassCard hover={false} className="p-5 sm:p-8">
             <h3 className="text-xl font-semibold text-white">{billingTitle}</h3>
             <p className="mt-3 max-w-3xl text-sm leading-relaxed text-muted sm:text-base">
               {billingIntro}

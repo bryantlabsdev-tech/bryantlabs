@@ -24,7 +24,7 @@ export default function StatusSelect({ value, onChange, disabled, className = ""
       onClick={(event) => event.stopPropagation()}
       disabled={disabled}
       aria-label="Lead status"
-      className={`w-full min-w-[9.5rem] rounded-xl border px-3 py-2 text-sm font-medium outline-none transition focus:border-indigo-400/50 disabled:cursor-not-allowed disabled:opacity-60 ${getLeadStatusStyles(
+      className={`w-full min-h-11 rounded-xl border px-3 py-2.5 text-sm font-medium outline-none transition focus:border-indigo-400/50 disabled:cursor-not-allowed disabled:opacity-60 sm:min-w-[9.5rem] ${getLeadStatusStyles(
         normalizedValue,
         "select",
       )} ${className}`}

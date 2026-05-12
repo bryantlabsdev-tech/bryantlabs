@@ -5,7 +5,7 @@ import SectionHeading from "../ui/SectionHeading"
 
 export default function Services() {
   return (
-    <section id="services" className="py-20 sm:py-24">
+    <section id="services" className="py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Services"
@@ -13,12 +13,12 @@ export default function Services() {
           description="From mobile apps and dashboards to automation workflows and AI-powered tools—software shaped around how your business runs."
         />
 
-        <div className="mt-14 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-10 grid gap-4 sm:mt-14 sm:gap-5 md:grid-cols-2 xl:grid-cols-3">
           {services.map((service, index) => {
             const Icon = service.icon
             return (
               <ScrollReveal key={service.title} delay={index * 0.05}>
-                <GlassCard className="group h-full p-6">
+                <GlassCard className="group h-full p-5 sm:p-6">
                   <div
                     className={`mb-5 inline-flex rounded-2xl bg-gradient-to-br ${service.accent} p-3`}
                   >

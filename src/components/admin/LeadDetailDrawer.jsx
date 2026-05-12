@@ -101,38 +101,38 @@ function LeadDetailDrawerPanel({
       />
 
       <motion.aside
-        className="relative flex h-full w-full max-w-xl flex-col border-l border-white/10 bg-elevated/95 shadow-2xl backdrop-blur-2xl"
+        className="relative flex h-[100dvh] max-h-[100dvh] w-full max-w-full flex-col border-l border-white/10 bg-elevated/95 shadow-2xl backdrop-blur-2xl sm:max-w-xl"
         initial={{ x: "100%" }}
         animate={{ x: 0 }}
         exit={{ x: "100%" }}
         transition={{ type: "spring", stiffness: 320, damping: 32 }}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-white/10 px-6 py-5">
-          <div>
+        <div className="flex items-start justify-between gap-4 border-b border-white/10 px-4 py-4 sm:px-6 sm:py-5">
+          <div className="min-w-0 pr-2">
             <p className="text-xs font-medium uppercase tracking-[0.24em] text-cyan/80">
               Lead detail
             </p>
-            <h2 className="mt-2 text-2xl font-semibold text-white">
+            <h2 className="mt-2 break-words text-xl font-semibold text-white sm:text-2xl">
               {lead.full_name}
             </h2>
-            <p className="mt-1 text-sm text-muted">{lead.email}</p>
+            <p className="mt-1 break-all text-sm text-muted">{lead.email}</p>
           </div>
 
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full border border-white/10 p-2 text-muted transition hover:border-white/20 hover:text-white"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 text-muted transition hover:border-white/20 hover:text-white"
             aria-label="Close"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-6">
-          <div className="flex flex-wrap gap-3">
+        <div className="flex-1 overflow-y-auto overscroll-y-contain px-4 py-5 sm:px-6 sm:py-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <Button
               variant="secondary"
-              className="px-4 py-2 text-sm"
+              className="w-full px-4 py-2 text-sm sm:w-auto"
               onClick={handleCopyEmail}
             >
               {copiedEmail ? (
@@ -149,7 +149,7 @@ function LeadDetailDrawerPanel({
             </Button>
             <Button
               variant="secondary"
-              className="px-4 py-2 text-sm"
+              className="w-full px-4 py-2 text-sm sm:w-auto"
               href={`mailto:${encodeURIComponent(lead.email)}?subject=${encodeURIComponent(
                 `Bryant Labs consultation follow-up - ${lead.full_name}`,
               )}`}
@@ -163,7 +163,7 @@ function LeadDetailDrawerPanel({
             <label className="block text-xs font-medium uppercase tracking-[0.18em] text-muted">
               Pipeline status
             </label>
-            <div className="mt-2 max-w-xs">
+            <div className="mt-2 max-w-full">
               <StatusSelect
                 value={lead.status}
                 disabled={updatingStatus}
@@ -216,7 +216,7 @@ function LeadDetailDrawerPanel({
             <DetailField label="Payment status" value={lead.payment_status} />
           </dl>
 
-          <div className="mt-8 rounded-3xl border border-indigo-400/20 bg-indigo-500/10 p-5 sm:p-6">
+          <div className="mt-8 rounded-3xl border border-indigo-400/20 bg-indigo-500/10 p-4 sm:p-6">
             <div className="flex items-start gap-3">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-black/20 text-cyan/80">
                 <Calendar className="h-5 w-5" aria-hidden />
@@ -276,7 +276,7 @@ function LeadDetailDrawerPanel({
             ) : null}
           </div>
 
-          <div className="mt-8 rounded-3xl border border-white/10 bg-black/20 p-5">
+          <div className="mt-8 rounded-3xl border border-white/10 bg-black/20 p-4 sm:p-5">
             <label className="block text-xs font-medium uppercase tracking-[0.18em] text-muted">
               Admin notes
             </label>
@@ -312,7 +312,7 @@ function LeadDetailDrawerPanel({
           </div>
         </div>
 
-        <div className="border-t border-white/10 px-6 py-5">
+        <div className="border-t border-white/10 px-4 py-4 pb-[max(env(safe-area-inset-bottom),1rem)] sm:px-6 sm:py-5">
           <Button variant="secondary" className="w-full" onClick={onClose}>
             Close
           </Button>

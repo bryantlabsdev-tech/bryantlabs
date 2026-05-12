@@ -1,5 +1,5 @@
 const controlClassName =
-  "mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-indigo-400/50"
+  "mt-2 min-h-11 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-base text-white outline-none transition placeholder:text-white/30 focus:border-indigo-400/50 sm:text-sm"
 
 export function FormField({
   label,
@@ -85,8 +85,8 @@ export function FormOptionGroup({
 }) {
   const gridClass =
     columns === 4
-      ? "grid gap-2 sm:grid-cols-2 lg:grid-cols-4"
-      : "grid gap-2 sm:grid-cols-2"
+      ? "grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4"
+      : "grid grid-cols-1 gap-2 sm:grid-cols-2"
 
   const normalizedOptions = options.map((option) =>
     typeof option === "string" ? { value: option, label: option } : option,
@@ -100,7 +100,7 @@ export function FormOptionGroup({
         {normalizedOptions.map((option, index) => (
           <label
             key={option.value}
-            className={`group flex cursor-pointer items-center gap-3 rounded-2xl border bg-white/[0.03] px-4 py-3 text-sm text-white/80 transition hover:border-white/15 has-[:checked]:border-indigo-400/40 has-[:checked]:bg-indigo-500/10 has-[:checked]:text-white ${
+            className={`group flex min-h-11 cursor-pointer items-center gap-3 rounded-2xl border bg-white/[0.03] px-4 py-3 text-sm text-white/80 transition hover:border-white/15 has-[:checked]:border-indigo-400/40 has-[:checked]:bg-indigo-500/10 has-[:checked]:text-white ${
               error ? "border-rose-400/40" : "border-white/10"
             }`}
           >

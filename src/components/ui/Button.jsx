@@ -1,4 +1,5 @@
 import { motion } from "framer-motion"
+import { trackCtaClick } from "../../lib/analytics"
 
 const variants = {
   primary:
@@ -13,9 +14,19 @@ export default function Button({
   variant = "primary",
   href,
   className = "",
+  analyticsCta,
+  onClick,
   ...props
 }) {
-  const classes = `inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${variants[variant]} ${className}`
+  const classes = `inline-flex min-h-11 touch-manipulation items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${variants[variant]} ${className}`
+
+  const handleClick = (event) => {
+    if (analyticsCta) {
+      void trackCtaClick(analyticsCta, { href })
+    }
+
+    onClick?.(event)
+  }
 
   if (href) {
     return (
@@ -24,6 +35,7 @@ export default function Button({
         whileHover={{ y: -2 }}
         whileTap={{ scale: 0.98 }}
         className={classes}
+        onClick={handleClick}
         {...props}
       >
         {children}
@@ -37,6 +49,7 @@ export default function Button({
       whileHover={{ y: -2 }}
       whileTap={{ scale: 0.98 }}
       className={classes}
+      onClick={handleClick}
       {...props}
     >
       {children}

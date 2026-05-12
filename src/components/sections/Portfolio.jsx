@@ -5,7 +5,7 @@ import SectionHeading from "../ui/SectionHeading"
 
 export default function Portfolio() {
   return (
-    <section id="work" className="py-20 sm:py-24">
+    <section id="work" className="py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Selected work"
@@ -13,18 +13,18 @@ export default function Portfolio() {
           description="A sample of mobile apps, business systems, and modern digital products built for speed, polish, and long-term maintainability."
         />
 
-        <div className="mt-14 space-y-10">
+        <div className="mt-10 space-y-6 sm:mt-14 sm:space-y-10">
           {projects.map((project, index) => (
             <ScrollReveal key={project.name} delay={index * 0.06}>
-              <article className="grid items-center gap-8 rounded-[2rem] border border-white/8 bg-white/[0.02] p-6 lg:grid-cols-2 lg:p-8">
+              <article className="grid items-center gap-6 rounded-[1.5rem] border border-white/8 bg-white/[0.02] p-4 sm:gap-8 sm:rounded-[2rem] sm:p-6 lg:grid-cols-2 lg:p-8">
                 <div className={index % 2 === 1 ? "lg:order-2" : ""}>
                   <ProjectMockup project={project} />
                 </div>
-                <div className={index % 2 === 1 ? "lg:order-1" : ""}>
+                <div className={`min-w-0 ${index % 2 === 1 ? "lg:order-1" : ""}`}>
                   <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-300/80">
                     {project.category}
                   </p>
-                  <h3 className="mt-3 text-3xl font-semibold text-white">
+                  <h3 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">
                     {project.name}
                   </h3>
                   <p className="mt-2 text-lg text-white/80">{project.tagline}</p>

@@ -14,7 +14,7 @@ import SectionHeading from "../ui/SectionHeading"
 
 export default function Pricing() {
   return (
-    <section id="pricing" className="py-20 sm:py-24">
+    <section id="pricing" className="py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Pricing"
@@ -22,12 +22,12 @@ export default function Pricing() {
           description={pricingIntro}
         />
 
-        <div className="mt-14 grid gap-6 lg:grid-cols-3">
+        <div className="mt-10 grid gap-5 sm:mt-14 sm:gap-6 lg:grid-cols-3">
           {pricingTiers.map((tier, index) => (
             <ScrollReveal key={tier.name} delay={index * 0.06}>
               <GlassCard
                 hover={false}
-                className={`flex h-full flex-col p-7 ${
+                className={`flex h-full flex-col p-6 sm:p-7 ${
                   tier.highlighted
                     ? "glow-ring border-indigo-400/30 bg-gradient-to-b from-indigo-500/10 to-white/[0.03]"
                     : ""
@@ -60,6 +60,7 @@ export default function Pricing() {
                   href="/#contact"
                   variant={tier.highlighted ? "primary" : "secondary"}
                   className="mt-8 w-full"
+                  analyticsCta={primaryCta}
                 >
                   {primaryCta}
                 </Button>
@@ -68,8 +69,8 @@ export default function Pricing() {
           ))}
         </div>
 
-        <ScrollReveal className="mt-14">
-          <GlassCard hover={false} className="p-6 sm:p-8">
+        <ScrollReveal className="mt-10 sm:mt-14">
+          <GlassCard hover={false} className="p-5 sm:p-8">
             <h3 className="text-xl font-semibold text-white">{billingTitle}</h3>
             <p className="mt-3 max-w-3xl text-sm leading-relaxed text-muted sm:text-base">
               {billingIntro}

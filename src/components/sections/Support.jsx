@@ -15,7 +15,7 @@ import SectionHeading from "../ui/SectionHeading"
 
 export default function Support() {
   return (
-    <section id="support" className="py-20 sm:py-24">
+    <section id="support" className="py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Ongoing Support"
@@ -34,8 +34,8 @@ export default function Support() {
           ))}
         </ScrollReveal>
 
-        <ScrollReveal className="mt-14">
-          <GlassCard hover={false} className="p-6 sm:p-8">
+        <ScrollReveal className="mt-10 sm:mt-14">
+          <GlassCard hover={false} className="p-5 sm:p-8">
             <h3 className="text-xl font-semibold text-white">
               {supportEngagementsTitle}
             </h3>
@@ -52,12 +52,12 @@ export default function Support() {
           </GlassCard>
         </ScrollReveal>
 
-        <div className="mt-14 grid gap-6 lg:grid-cols-3">
+        <div className="mt-10 grid gap-5 sm:mt-14 sm:gap-6 lg:grid-cols-3">
           {supportPlans.map((plan, index) => (
             <ScrollReveal key={plan.name} delay={index * 0.06}>
               <GlassCard
                 hover={false}
-                className={`flex h-full flex-col p-7 ${
+                className={`flex h-full flex-col p-6 sm:p-7 ${
                   plan.highlighted
                     ? "glow-ring border-indigo-400/30 bg-gradient-to-b from-indigo-500/10 to-white/[0.03]"
                     : ""
@@ -82,6 +82,7 @@ export default function Support() {
                   href="/#contact"
                   variant={plan.highlighted ? "primary" : "secondary"}
                   className="mt-8 w-full"
+                  analyticsCta={primaryCta}
                 >
                   {primaryCta}
                 </Button>

@@ -39,8 +39,8 @@ export default function AdminLoginPage() {
 
   return (
     <AdminLayout>
-      <div className="flex min-h-screen items-center justify-center px-6 py-16">
-        <GlassCard hover={false} className="glow-ring w-full max-w-md p-8">
+      <div className="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 sm:py-16">
+        <GlassCard hover={false} className="glow-ring w-full max-w-md p-6 sm:p-8">
           <p className="text-xs font-medium uppercase tracking-[0.24em] text-cyan/80">
             Bryant Labs
           </p>

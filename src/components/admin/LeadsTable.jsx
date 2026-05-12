@@ -56,14 +56,14 @@ function LeadCard({ lead, updatingLeadId, onLeadSelect, onStatusChange }) {
     <button
       type="button"
       onClick={() => onLeadSelect(lead)}
-      className="w-full rounded-3xl border border-white/10 bg-black/20 p-5 text-left transition hover:border-white/15 hover:bg-white/[0.04]"
+      className="w-full rounded-3xl border border-white/10 bg-black/20 p-4 text-left transition hover:border-white/15 hover:bg-white/[0.04] sm:p-5"
     >
-      <div className="flex items-start justify-between gap-4">
-        <div>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
           <p className="text-base font-semibold text-white">{lead.full_name}</p>
-          <p className="mt-1 text-sm text-muted">{lead.email}</p>
+          <p className="mt-1 break-all text-sm text-muted">{lead.email}</p>
         </div>
-        <p className="text-xs text-muted">{formatDate(lead.created_at)}</p>
+        <p className="shrink-0 text-xs text-muted">{formatDate(lead.created_at)}</p>
       </div>
 
       <div className="mt-4 grid gap-3 text-sm text-white/75">
@@ -114,8 +114,8 @@ export default function LeadsTable({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <label className="relative block w-full lg:max-w-md">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <label className="relative block min-w-0 w-full sm:max-w-md">
           <Search
             className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
             aria-hidden
@@ -125,16 +125,16 @@ export default function LeadsTable({
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
             placeholder="Search leads by name, email, company, or summary"
-            className="w-full rounded-2xl border border-white/10 bg-black/20 py-3 pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-indigo-400/50"
+            className="w-full rounded-2xl border border-white/10 bg-black/20 py-3 pl-11 pr-4 text-base text-white outline-none transition placeholder:text-white/30 focus:border-indigo-400/50 sm:text-sm"
           />
         </label>
 
-        <label className="flex w-full items-center gap-3 lg:w-auto">
+        <label className="flex w-full min-w-0 flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-3">
           <span className="text-sm text-muted">Status</span>
           <select
             value={statusFilter}
             onChange={(event) => setStatusFilter(event.target.value)}
-            className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none transition focus:border-indigo-400/50 lg:min-w-[12rem]"
+            className="min-h-11 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-base text-white outline-none transition focus:border-indigo-400/50 sm:min-w-[12rem] sm:text-sm"
           >
             <option value="all" className="bg-elevated">
               All statuses
@@ -165,8 +165,8 @@ export default function LeadsTable({
           </div>
 
           <div className="hidden overflow-hidden rounded-3xl border border-white/10 bg-black/20 md:block">
-            <div className="max-h-[70vh] overflow-auto">
-              <table className="min-w-full divide-y divide-white/10 text-left text-sm">
+            <div className="max-h-[70vh] overflow-x-auto overflow-y-auto overscroll-x-contain">
+              <table className="min-w-[72rem] w-full divide-y divide-white/10 text-left text-sm">
                 <thead className="sticky top-0 z-10 bg-elevated/95 text-xs uppercase tracking-[0.18em] text-muted backdrop-blur-xl">
                   <tr>
                     <th className="px-4 py-4 font-medium">Created</th>

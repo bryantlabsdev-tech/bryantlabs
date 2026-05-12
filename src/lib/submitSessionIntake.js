@@ -1,4 +1,5 @@
 import { sendIntakeConfirmationEmail } from "./sendIntakeConfirmationEmail"
+import { trackIntakeSubmitted } from "./analytics"
 import { getSupabaseClient } from "./supabaseClient"
 
 export class SessionIntakeError extends Error {
@@ -68,6 +69,10 @@ export async function submitSessionIntake({ session, formData }) {
       { cause: error },
     )
   }
+
+  await trackIntakeSubmitted({
+    session_id: session.id,
+  })
 
   await sendIntakeConfirmationEmail(intake)
 

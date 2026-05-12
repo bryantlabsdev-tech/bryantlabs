@@ -5,7 +5,7 @@ import SectionHeading from "../ui/SectionHeading"
 
 export default function Testimonials() {
   return (
-    <section className="py-20 sm:py-24">
+    <section className="py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Testimonials"
@@ -13,7 +13,7 @@ export default function Testimonials() {
           description="Founders and operations leaders partner with Bryant Labs when speed, clarity, and craft all have to show up together."
         />
 
-        <div className="mt-14 grid gap-5 lg:grid-cols-3">
+        <div className="mt-10 grid gap-4 sm:mt-14 sm:gap-5 lg:grid-cols-3">
           {testimonials.map((item, index) => (
             <ScrollReveal key={item.name} delay={index * 0.06}>
               <GlassCard className="flex h-full flex-col p-6">

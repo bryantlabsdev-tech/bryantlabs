@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { Mail, Send } from "lucide-react"
 import { introCallSchedulingCopy, introCallTitle } from "../../config/scheduling"
 import { consultationEngagements } from "../../data/consultation"
@@ -16,6 +16,7 @@ import {
   SessionIntakeError,
   submitSessionIntake,
 } from "../../lib/submitSessionIntake"
+import { trackIntakeStarted } from "../../lib/analytics"
 import Button from "../ui/Button"
 import {
   FormField,
@@ -64,6 +65,7 @@ export default function Contact() {
   const [fieldErrors, setFieldErrors] = useState({})
   const [submitError, setSubmitError] = useState("")
   const [successMessage, setSuccessMessage] = useState("")
+  const hasTrackedIntakeStart = useRef(false)
 
   const selectedSession = useMemo(
     () =>
@@ -71,6 +73,15 @@ export default function Contact() {
       strategySessions[0],
     [selectedSessionId],
   )
+
+  const handleIntakeInteraction = () => {
+    if (hasTrackedIntakeStart.current) {
+      return
+    }
+
+    hasTrackedIntakeStart.current = true
+    void trackIntakeStarted()
+  }
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -131,7 +142,7 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="py-20 sm:py-24">
+    <section id="contact" className="py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Getting started"
@@ -139,9 +150,9 @@ export default function Contact() {
           description={sessionValueCopy}
         />
 
-        <div className="mt-14 grid gap-6 lg:grid-cols-[1.45fr_0.85fr]">
+        <div className="mt-10 grid gap-6 sm:mt-14 lg:grid-cols-[1.45fr_0.85fr]">
           <ScrollReveal>
-            <GlassCard hover={false} className="p-6 sm:p-8">
+            <GlassCard hover={false} className="p-5 sm:p-8">
               <div className="space-y-2">
                 <p className="text-sm leading-relaxed text-muted">
                   {sessionCreditCopy}
@@ -156,7 +167,12 @@ export default function Contact() {
                 </p>
               </div>
 
-              <form className="mt-8 space-y-8" onSubmit={handleSubmit} noValidate>
+              <form
+                className="mt-8 space-y-6 sm:space-y-8"
+                onSubmit={handleSubmit}
+                onFocusCapture={handleIntakeInteraction}
+                noValidate
+              >
                 <FormSection
                   title="Planning session preference"
                   description="If we proceed beyond the intro call, indicate which paid planning session you would prefer."
@@ -323,6 +339,7 @@ export default function Contact() {
                   type="submit"
                   className="w-full sm:w-auto"
                   disabled={isSubmitting}
+                  analyticsCta={intakeSubmitCta}
                 >
                   {isSubmitting ? "Submitting project intake..." : intakeSubmitCta}
                   <Send className="h-4 w-4" />
@@ -332,7 +349,7 @@ export default function Contact() {
           </ScrollReveal>
 
           <ScrollReveal delay={0.08}>
-            <GlassCard className="h-full p-6 sm:p-8">
+            <GlassCard className="h-full p-5 sm:p-8">
               <p className="text-sm font-medium text-white">
                 Consultation flow
               </p>
@@ -346,8 +363,8 @@ export default function Contact() {
                     key={engagement.id}
                     className="rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3"
                   >
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="min-w-0">
                         <p className="text-sm font-medium text-white">
                           {engagement.name}
                         </p>
