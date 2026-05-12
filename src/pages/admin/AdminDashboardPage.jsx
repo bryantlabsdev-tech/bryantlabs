@@ -1,12 +1,15 @@
 import { useState } from "react"
 import AdminAnalytics from "../../components/admin/AdminAnalytics"
 import AdminOps from "../../components/admin/AdminOps"
+import AdminToast from "../../components/admin/AdminToast"
+import ConfirmDialog from "../../components/admin/ConfirmDialog"
 import LeadDetailDrawer from "../../components/admin/LeadDetailDrawer"
 import LeadMetrics from "../../components/admin/LeadMetrics"
 import LeadsEmptyState from "../../components/admin/LeadsEmptyState"
 import LeadsTable from "../../components/admin/LeadsTable"
 import Button from "../../components/ui/Button"
 import GlassCard from "../../components/ui/GlassCard"
+import { canResetSiteAnalytics } from "../../config/admin"
 import { useAdminAuth } from "../../hooks/useAdminAuth"
 import { useAppErrors } from "../../hooks/useAppErrors"
 import { useConsultationLeads } from "../../hooks/useConsultationLeads"
@@ -44,6 +47,7 @@ export default function AdminDashboardPage() {
     loading: analyticsLoading,
     error: analyticsError,
     reloadAnalytics,
+    resetAnalytics,
   } = useSiteAnalytics()
   const {
     errors: appErrors,
@@ -62,6 +66,12 @@ export default function AdminDashboardPage() {
   const [sendingIntroLinkLeadId, setSendingIntroLinkLeadId] = useState(null)
   const [statusError, setStatusError] = useState("")
   const [signingOut, setSigningOut] = useState(false)
+  const [showResetAnalyticsConfirm, setShowResetAnalyticsConfirm] = useState(false)
+  const [resettingAnalytics, setResettingAnalytics] = useState(false)
+  const [analyticsToastMessage, setAnalyticsToastMessage] = useState("")
+  const [analyticsResetError, setAnalyticsResetError] = useState("")
+  const showResetAnalyticsAction =
+    activeTab === "analytics" && canResetSiteAnalytics(userEmail)
 
   const handleStatusChange = async (lead, nextStatus) => {
     if (lead.status === nextStatus) {
@@ -161,6 +171,23 @@ export default function AdminDashboardPage() {
     reloadLeads()
   }
 
+  const handleConfirmResetAnalytics = async () => {
+    setResettingAnalytics(true)
+    setAnalyticsResetError("")
+
+    try {
+      await resetAnalytics()
+      setShowResetAnalyticsConfirm(false)
+      setAnalyticsToastMessage("Analytics reset successfully")
+    } catch (resetError) {
+      setAnalyticsResetError(
+        resetError?.message ?? "We could not reset analytics right now.",
+      )
+    } finally {
+      setResettingAnalytics(false)
+    }
+  }
+
   return (
     <div className="mx-auto max-w-[1400px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
@@ -203,6 +230,19 @@ export default function AdminDashboardPage() {
           >
             Refresh
           </Button>
+          {showResetAnalyticsAction ? (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setAnalyticsResetError("")
+                setShowResetAnalyticsConfirm(true)
+              }}
+              disabled={analyticsLoading || resettingAnalytics}
+              className="w-full sm:w-auto"
+            >
+              Reset Analytics
+            </Button>
+          ) : null}
           <Button
             onClick={handleSignOut}
             disabled={signingOut}
@@ -232,6 +272,14 @@ export default function AdminDashboardPage() {
 
       {activeTab === "analytics" ? (
         <div className="mt-8">
+          {analyticsResetError ? (
+            <p
+              className="mb-4 rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-100"
+              role="alert"
+            >
+              {analyticsResetError}
+            </p>
+          ) : null}
           <AdminAnalytics
             summary={summary}
             loading={analyticsLoading}
@@ -298,6 +346,25 @@ export default function AdminDashboardPage() {
         updatingStatus={updatingLeadId === selectedLead?.id}
         savingNotes={savingNotesLeadId === selectedLead?.id}
         sendingIntroLink={sendingIntroLinkLeadId === selectedLead?.id}
+      />
+
+      <ConfirmDialog
+        open={showResetAnalyticsConfirm}
+        title="Reset analytics"
+        description="Are you sure? This permanently deletes analytics data."
+        confirmLabel="Reset analytics"
+        loading={resettingAnalytics}
+        onCancel={() => {
+          if (!resettingAnalytics) {
+            setShowResetAnalyticsConfirm(false)
+          }
+        }}
+        onConfirm={handleConfirmResetAnalytics}
+      />
+
+      <AdminToast
+        message={analyticsToastMessage}
+        onDismiss={() => setAnalyticsToastMessage("")}
       />
     </div>
   )

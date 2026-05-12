@@ -1,5 +1,6 @@
 -- Bryant Labs first-party analytics
 -- Run supabase/admin_identity.sql first, then paste into Supabase SQL editor.
+-- For admin test resets, also run supabase/reset_analytics.sql.
 
 create table if not exists public.site_events (
   id uuid primary key default gen_random_uuid(),

@@ -132,6 +132,20 @@ export function useSiteAnalytics() {
     }
   }, [])
 
+  const resetAnalytics = useCallback(async () => {
+    setError("")
+
+    const supabase = getSupabaseClient()
+    const { error: resetError } = await supabase.rpc("reset_analytics")
+
+    if (resetError) {
+      throw resetError
+    }
+
+    setEvents([])
+    setLoading(false)
+  }, [])
+
   useEffect(() => {
     let active = true
 
@@ -173,5 +187,6 @@ export function useSiteAnalytics() {
     loading,
     error,
     reloadAnalytics: () => loadAnalytics({ showLoading: true }),
+    resetAnalytics,
   }
 }

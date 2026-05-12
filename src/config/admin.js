@@ -87,6 +87,16 @@ export function isApprovedAdminEmail(email) {
   return email.trim().toLowerCase() === CLIENT_ADMIN_EMAIL
 }
 
+export function canResetSiteAnalytics(userEmail) {
+  if (import.meta.env.DEV) {
+    return true
+  }
+
+  const email = String(userEmail ?? "").trim().toLowerCase()
+
+  return email.includes("bryantlabs")
+}
+
 export function buildLeadMetrics(leads) {
   const total = leads.length
   const newCount = leads.filter(
