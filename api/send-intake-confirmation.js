@@ -24,9 +24,9 @@ function buildClientEmailHtml({ fullName }) {
     <div style="font-family:Inter,Segoe UI,sans-serif;line-height:1.6;color:#111827;max-width:640px;">
       <p style="margin:0 0 16px;">Hi ${greeting},</p>
       <p style="margin:0 0 16px;">Thank you for submitting your project intake to Bryant Labs.</p>
-      <p style="margin:0 0 16px;">We will review your details and follow up by email with next steps.</p>
-      <p style="margin:0 0 16px;">If your project looks like a fit, the next step is a short complimentary intro call to discuss goals, timeline, and whether a deeper planning session makes sense.</p>
-      <p style="margin:0 0 16px;">Paid discovery and product strategy sessions are scheduled only after intake review. If you move forward with a build, those session fees are credited toward your project kickoff deposit.</p>
+      <p style="margin:0 0 16px;">Our team will review your details and follow up by email with next steps. We typically respond within one to two business days.</p>
+      <p style="margin:0 0 16px;">Every engagement begins with qualification and planning. If your project looks like a fit, we will schedule a short complimentary intro call before any paid discovery or strategy session.</p>
+      <p style="margin:0 0 16px;">Paid planning sessions are scheduled only after intake review. If you move forward with a build, those session fees are credited toward your project kickoff deposit.</p>
       <p style="margin:0 0 16px;">Development does not begin until proposal, milestones, and kickoff deposit are approved.</p>
       <p style="margin:0;">— Bryant Labs</p>
     </div>
@@ -92,6 +92,51 @@ function createTransport() {
   })
 }
 
+function summarizeSmtpResponse(info) {
+  return {
+    messageId: info.messageId,
+    response: info.response,
+    accepted: info.accepted,
+    rejected: info.rejected,
+  }
+}
+
+async function sendTrackedEmail(transporter, { type, to, mailOptions }) {
+  console.info(`[Bryant Labs] Sending ${type} intake email`, {
+    type,
+    to,
+    from: mailOptions.from,
+    subject: mailOptions.subject,
+  })
+
+  try {
+    const info = await transporter.sendMail({
+      ...mailOptions,
+      to,
+    })
+
+    console.info(`[Bryant Labs] ${type} intake email sent successfully`, {
+      type,
+      to,
+      from: mailOptions.from,
+      subject: mailOptions.subject,
+      smtp: summarizeSmtpResponse(info),
+    })
+
+    return { success: true, info }
+  } catch (error) {
+    console.error(`[Bryant Labs] ${type} intake email failed`, {
+      type,
+      to,
+      from: mailOptions.from,
+      subject: mailOptions.subject,
+      error: error.message,
+    })
+
+    return { success: false, error }
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST")
@@ -123,44 +168,45 @@ export default async function handler(req, res) {
   const clientSubject = "Your Bryant Labs project intake was received"
   const internalSubject = "New Bryant Labs intake submitted"
 
-  let clientEmailError = null
-  let internalEmailError = null
+  console.info("[Bryant Labs] Intake email dispatch started", {
+    customerRecipient: payload.email,
+    internalRecipient: emailUser,
+    customerName: payload.fullName,
+  })
 
-  try {
-    await transporter.sendMail({
+  const clientResult = await sendTrackedEmail(transporter, {
+    type: "customer confirmation",
+    to: payload.email,
+    mailOptions: {
       from: fromAddress,
-      to: payload.email,
       replyTo: emailUser,
       subject: clientSubject,
       html: buildClientEmailHtml(payload),
-    })
-  } catch (error) {
-    clientEmailError = error
-    console.error("[Bryant Labs] Client intake confirmation email failed:", error)
-  }
+    },
+  })
 
-  try {
-    await transporter.sendMail({
+  const internalResult = await sendTrackedEmail(transporter, {
+    type: "internal notification",
+    to: emailUser,
+    mailOptions: {
       from: fromAddress,
-      to: emailUser,
       replyTo: payload.email,
       subject: internalSubject,
       html: buildInternalEmailHtml(payload),
-    })
-  } catch (error) {
-    internalEmailError = error
-    console.error("[Bryant Labs] Internal intake notification email failed:", error)
-  }
+    },
+  })
 
-  if (clientEmailError) {
+  if (!clientResult.success) {
     return res.status(502).json({
       error: "Client confirmation email could not be sent.",
-      internalNotificationSent: !internalEmailError,
+      customerConfirmationSent: false,
+      internalNotificationSent: internalResult.success,
     })
   }
 
   return res.status(200).json({
     success: true,
-    internalNotificationSent: !internalEmailError,
+    customerConfirmationSent: true,
+    internalNotificationSent: internalResult.success,
   })
 }

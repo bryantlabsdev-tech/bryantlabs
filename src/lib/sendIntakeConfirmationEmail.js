@@ -25,8 +25,19 @@ export async function sendIntakeConfirmationEmail(intake) {
 
     if (!response.ok) {
       const details = await response.json().catch(() => ({}))
-      console.error("[Bryant Labs] Intake confirmation email failed:", details)
+      console.error("[Bryant Labs] Intake confirmation email failed:", {
+        customerEmail: intake.email,
+        details,
+      })
+      return
     }
+
+    const details = await response.json().catch(() => ({}))
+    console.info("[Bryant Labs] Intake confirmation email dispatch completed", {
+      customerEmail: intake.email,
+      customerConfirmationSent: details.customerConfirmationSent,
+      internalNotificationSent: details.internalNotificationSent,
+    })
   } catch (error) {
     console.error("[Bryant Labs] Intake confirmation email failed:", error)
   }
