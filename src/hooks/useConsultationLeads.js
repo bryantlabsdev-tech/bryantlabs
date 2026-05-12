@@ -118,6 +118,27 @@ export function useConsultationLeads() {
     return data
   }, [])
 
+  const markIntroLinkScheduled = useCallback(async (leadId) => {
+    const supabase = getSupabaseClient()
+    const { data, error: updateError } = await supabase
+      .from("consultation_leads")
+      .update({
+        status: "intro_scheduled",
+        intro_link_sent_at: new Date().toISOString(),
+      })
+      .eq("id", leadId)
+      .select("*")
+      .single()
+
+    if (updateError) {
+      throw updateError
+    }
+
+    setLeads((current) => replaceLead(current, data))
+
+    return data
+  }, [])
+
   return {
     leads,
     loading,
@@ -125,5 +146,6 @@ export function useConsultationLeads() {
     reloadLeads: () => loadLeads({ showLoading: true }),
     updateLeadStatus,
     updateLeadNotes,
+    markIntroLinkScheduled,
   }
 }

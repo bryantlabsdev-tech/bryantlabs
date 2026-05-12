@@ -7,9 +7,10 @@ import LeadsEmptyState from "../../components/admin/LeadsEmptyState"
 import LeadsTable from "../../components/admin/LeadsTable"
 import Button from "../../components/ui/Button"
 import GlassCard from "../../components/ui/GlassCard"
+import { sendIntroLinkEmail } from "../../lib/sendIntroLinkEmail"
 
 export default function AdminDashboardPage() {
-  const { userEmail, signOut } = useAdminAuth()
+  const { session, userEmail, signOut } = useAdminAuth()
   const {
     leads,
     loading,
@@ -17,10 +18,12 @@ export default function AdminDashboardPage() {
     reloadLeads,
     updateLeadStatus,
     updateLeadNotes,
+    markIntroLinkScheduled,
   } = useConsultationLeads()
   const [selectedLead, setSelectedLead] = useState(null)
   const [updatingLeadId, setUpdatingLeadId] = useState(null)
   const [savingNotesLeadId, setSavingNotesLeadId] = useState(null)
+  const [sendingIntroLinkLeadId, setSendingIntroLinkLeadId] = useState(null)
   const [statusError, setStatusError] = useState("")
   const [signingOut, setSigningOut] = useState(false)
 
@@ -56,6 +59,36 @@ export default function AdminDashboardPage() {
       )
     } finally {
       setSavingNotesLeadId(null)
+    }
+  }
+
+  const handleSendIntroLink = async (lead) => {
+    const accessToken = session?.access_token
+
+    if (!accessToken) {
+      throw new Error("You must be signed in to send intro links.")
+    }
+
+    if (!lead.email) {
+      throw new Error("This lead does not have an email address.")
+    }
+
+    setSendingIntroLinkLeadId(lead.id)
+
+    try {
+      await sendIntroLinkEmail({
+        accessToken,
+        leadId: lead.id,
+        fullName: lead.full_name,
+        email: lead.email,
+      })
+
+      const updatedLead = await markIntroLinkScheduled(lead.id)
+      setSelectedLead((current) =>
+        current?.id === updatedLead.id ? updatedLead : current,
+      )
+    } finally {
+      setSendingIntroLinkLeadId(null)
     }
   }
 
@@ -144,8 +177,10 @@ export default function AdminDashboardPage() {
         onClose={() => setSelectedLead(null)}
         onStatusChange={handleStatusChange}
         onSaveNotes={handleSaveNotes}
+        onSendIntroLink={handleSendIntroLink}
         updatingStatus={updatingLeadId === selectedLead?.id}
         savingNotes={savingNotesLeadId === selectedLead?.id}
+        sendingIntroLink={sendingIntroLinkLeadId === selectedLead?.id}
       />
     </div>
   )

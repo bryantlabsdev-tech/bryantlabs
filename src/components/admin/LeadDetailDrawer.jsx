@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion"
-import { Check, Copy, Mail, X } from "lucide-react"
+import { Calendar, Check, Copy, Mail, X } from "lucide-react"
 import { useEffect, useState } from "react"
 import { getLeadStatusLabel } from "../../config/admin"
 import Button from "../ui/Button"
@@ -32,12 +32,16 @@ function LeadDetailDrawerPanel({
   onClose,
   onStatusChange,
   onSaveNotes,
+  onSendIntroLink,
   updatingStatus,
   savingNotes,
+  sendingIntroLink,
 }) {
   const [notes, setNotes] = useState(lead.admin_notes ?? "")
   const [notesMessage, setNotesMessage] = useState("")
   const [notesError, setNotesError] = useState("")
+  const [introLinkMessage, setIntroLinkMessage] = useState("")
+  const [introLinkError, setIntroLinkError] = useState("")
   const [copiedEmail, setCopiedEmail] = useState(false)
 
   const handleCopyEmail = async () => {
@@ -65,6 +69,24 @@ function LeadDetailDrawerPanel({
       setNotesError(saveError?.message ?? "We could not save these notes.")
     }
   }
+
+  const handleSendIntroLink = async () => {
+    setIntroLinkMessage("")
+    setIntroLinkError("")
+
+    try {
+      await onSendIntroLink(lead)
+      setIntroLinkMessage("Intro call link sent successfully.")
+    } catch (sendError) {
+      setIntroLinkError(
+        sendError?.message ?? "We could not send the intro call link.",
+      )
+    }
+  }
+
+  const introLinkSentAt = lead.intro_link_sent_at
+    ? dateFormatter.format(new Date(lead.intro_link_sent_at))
+    : null
 
   return (
     <>
@@ -194,6 +216,66 @@ function LeadDetailDrawerPanel({
             <DetailField label="Payment status" value={lead.payment_status} />
           </dl>
 
+          <div className="mt-8 rounded-3xl border border-indigo-400/20 bg-indigo-500/10 p-5 sm:p-6">
+            <div className="flex items-start gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-black/20 text-cyan/80">
+                <Calendar className="h-5 w-5" aria-hidden />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-medium uppercase tracking-[0.18em] text-cyan/80">
+                  Intro call workflow
+                </p>
+                <h3 className="mt-2 text-lg font-semibold text-white">
+                  Send a qualified intro call link
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-white/70">
+                  Email this lead a complimentary Bryant Labs intro call scheduling
+                  link after you have reviewed their intake.
+                </p>
+              </div>
+            </div>
+
+            {introLinkSentAt ? (
+              <p className="mt-4 text-sm text-white/75">
+                Intro call link sent at: {introLinkSentAt}
+              </p>
+            ) : null}
+
+            {introLinkMessage ? (
+              <p
+                className="mt-4 rounded-2xl border border-emerald-400/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100"
+                role="status"
+              >
+                {introLinkMessage}
+              </p>
+            ) : null}
+
+            {introLinkError ? (
+              <p
+                className="mt-4 rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-100"
+                role="alert"
+              >
+                {introLinkError}
+              </p>
+            ) : null}
+
+            <Button
+              className="mt-5 w-full"
+              onClick={handleSendIntroLink}
+              disabled={!lead.email || sendingIntroLink}
+            >
+              <Calendar className="h-4 w-4" />
+              {sendingIntroLink ? "Sending intro call link…" : "Send Intro Call Link"}
+            </Button>
+
+            {!lead.email ? (
+              <p className="mt-3 text-xs text-muted">
+                This lead needs an email address before an intro call link can be
+                sent.
+              </p>
+            ) : null}
+          </div>
+
           <div className="mt-8 rounded-3xl border border-white/10 bg-black/20 p-5">
             <label className="block text-xs font-medium uppercase tracking-[0.18em] text-muted">
               Admin notes
@@ -245,8 +327,10 @@ export default function LeadDetailDrawer({
   onClose,
   onStatusChange,
   onSaveNotes,
+  onSendIntroLink,
   updatingStatus = false,
   savingNotes = false,
+  sendingIntroLink = false,
 }) {
   useEffect(() => {
     if (!lead) {
@@ -276,8 +360,10 @@ export default function LeadDetailDrawer({
             onClose={onClose}
             onStatusChange={onStatusChange}
             onSaveNotes={onSaveNotes}
+            onSendIntroLink={onSendIntroLink}
             updatingStatus={updatingStatus}
             savingNotes={savingNotes}
+            sendingIntroLink={sendingIntroLink}
           />
         </div>
       ) : null}
