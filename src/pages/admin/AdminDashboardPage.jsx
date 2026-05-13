@@ -197,14 +197,14 @@ export default function AdminDashboardPage() {
           </p>
           <h1 className="mt-3 text-3xl font-semibold text-gradient sm:text-4xl">
             {activeTab === "analytics"
-              ? "Site analytics"
+              ? "Studio overview"
               : activeTab === "ops"
                 ? "System operations"
                 : "Consultation leads"}
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-muted">
             {activeTab === "analytics"
-              ? "Review lightweight first-party traffic, intake funnel activity, and recent conversion events."
+              ? "Marketing & intake funnel — readable at a glance."
               : activeTab === "ops"
                 ? "Monitor recent API failures, email issues, and configuration problems without exposing secrets."
                 : "Track intake submissions, update pipeline status, and keep private follow-up notes in one place."}
@@ -284,6 +284,7 @@ export default function AdminDashboardPage() {
             summary={summary}
             loading={analyticsLoading}
             error={analyticsError}
+            leadsCaptured={leads.length}
           />
         </div>
       ) : activeTab === "ops" ? (

@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useState } from "react"
 import { ANALYTICS_EVENTS } from "../lib/analytics"
+import {
+  activityDescriptionFromEvent,
+  buildFunnelCounts,
+  buildSectionTraffic,
+  estimateReturningVisitors,
+} from "../lib/analyticsPresentation"
 import { getSupabaseClient } from "../lib/supabaseClient"
 
 const DAY_MS = 24 * 60 * 60 * 1000
@@ -10,10 +16,6 @@ function startOfDay(date) {
   return next
 }
 
-function formatEventLabel(eventName) {
-  return eventName.replaceAll("_", " ")
-}
-
 function formatEventTime(value) {
   return new Intl.DateTimeFormat(undefined, {
     dateStyle: "medium",
@@ -21,27 +23,8 @@ function formatEventTime(value) {
   }).format(new Date(value))
 }
 
-function buildTopPages(events) {
-  const counts = new Map()
-
-  for (const event of events) {
-    if (event.event_name !== ANALYTICS_EVENTS.PAGE_VIEW || !event.page_path) {
-      continue
-    }
-
-    counts.set(event.page_path, (counts.get(event.page_path) ?? 0) + 1)
-  }
-
-  return [...counts.entries()]
-    .sort((left, right) => right[1] - left[1])
-    .slice(0, 5)
-    .map(([pagePath, count]) => ({ pagePath, count }))
-}
-
 function buildAnalyticsSummary(events) {
-  const now = Date.now()
-  const todayStart = startOfDay(new Date(now)).getTime()
-  const sevenDaysAgo = now - 7 * DAY_MS
+  const todayStart = startOfDay(new Date()).getTime()
 
   const pageViews = events.filter(
     (event) => event.event_name === ANALYTICS_EVENTS.PAGE_VIEW,
@@ -52,39 +35,36 @@ function buildAnalyticsSummary(events) {
   const intakeSubmissions = events.filter(
     (event) => event.event_name === ANALYTICS_EVENTS.INTAKE_SUBMITTED,
   )
-  const ctaClicks = events.filter(
-    (event) => event.event_name === ANALYTICS_EVENTS.CTA_CLICK,
-  )
 
   const visitsToday = pageViews.filter(
     (event) => new Date(event.created_at).getTime() >= todayStart,
   ).length
-  const visitsLastSevenDays = pageViews.filter(
-    (event) => new Date(event.created_at).getTime() >= sevenDaysAgo,
-  ).length
   const intakeStartCount = intakeStarts.length
   const intakeSubmissionCount = intakeSubmissions.length
-  const conversionRate =
-    intakeStartCount > 0
-      ? Math.round((intakeSubmissionCount / intakeStartCount) * 100)
-      : 0
+
+  const sectionTraffic = buildSectionTraffic(pageViews)
+  const maxSectionCount = sectionTraffic[0]?.count ?? 0
+  const mostActiveSection =
+    maxSectionCount > 0 ? sectionTraffic[0].label : "Not enough traffic yet"
+
+  const activityFeed = events.slice(0, 14).map((event) => ({
+    id: event.id,
+    description: activityDescriptionFromEvent(event),
+    timeLabel: formatEventTime(event.created_at),
+  }))
 
   return {
     visitsToday,
-    visitsLastSevenDays,
     intakeStartCount,
     intakeSubmissionCount,
-    conversionRate,
-    ctaClickCount: ctaClicks.length,
-    topPages: buildTopPages(events),
-    recentEvents: events.slice(0, 12).map((event) => ({
-      id: event.id,
-      eventName: event.event_name,
-      pagePath: event.page_path,
-      createdAt: event.created_at,
-      label: formatEventLabel(event.event_name),
-      timeLabel: formatEventTime(event.created_at),
-    })),
+    mostActiveSection,
+    returningVisitorsEstimate: estimateReturningVisitors(pageViews),
+    sectionTraffic,
+    activityFeed,
+    funnel: buildFunnelCounts(events),
+    hasAnyEvents: events.length > 0,
+    hasPageViews: pageViews.length > 0,
+    hasIntakeActivity: intakeStartCount > 0 || intakeSubmissionCount > 0,
   }
 }
 
