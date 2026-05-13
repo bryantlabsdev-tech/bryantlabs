@@ -3,6 +3,7 @@ import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute"
 import SiteLayout from "./components/layout/SiteLayout"
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage"
 import AdminLoginPage from "./pages/admin/AdminLoginPage"
+import ClientLoginPage from "./pages/ClientLoginPage"
 import HomePage from "./pages/HomePage"
 import PrivacyPage from "./pages/PrivacyPage"
 import TermsPage from "./pages/TermsPage"
@@ -17,6 +18,7 @@ export default function App() {
         </Route>
         <Route element={<SiteLayout />}>
           <Route index element={<HomePage />} />
+          <Route path="client-login" element={<ClientLoginPage />} />
           <Route path="privacy" element={<PrivacyPage />} />
           <Route path="terms" element={<TermsPage />} />
         </Route>

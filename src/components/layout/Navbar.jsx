@@ -33,11 +33,20 @@ export default function Navbar() {
           ))}
         </nav>
 
-        <motion.div className="hidden md:block" whileHover={{ y: -2 }}>
-          <Button href="/#contact" variant="primary" className="px-4 py-2.5 text-xs sm:text-sm" analyticsCta={primaryCta}>
-            {primaryCta}
+        <div className="hidden items-center gap-3 md:flex">
+          <Button
+            href="/client-login"
+            variant="secondary"
+            className="border border-white/10 px-4 py-2.5 text-xs text-white/80 shadow-none sm:text-sm"
+          >
+            Client Login
           </Button>
-        </motion.div>
+          <motion.div whileHover={{ y: -2 }}>
+            <Button href="/#contact" variant="primary" className="px-4 py-2.5 text-xs sm:text-sm" analyticsCta={primaryCta}>
+              {primaryCta}
+            </Button>
+          </motion.div>
+        </div>
 
         <button
           type="button"
@@ -68,6 +77,14 @@ export default function Navbar() {
                   {link.label}
                 </a>
               ))}
+              <Button
+                href="/client-login"
+                variant="secondary"
+                className="mt-1 w-full border border-white/10 text-white/85 shadow-none"
+                onClick={() => setOpen(false)}
+              >
+                Client Login
+              </Button>
               <Button
                 href="/#contact"
                 variant="primary"
