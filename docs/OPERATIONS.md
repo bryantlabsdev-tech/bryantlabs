@@ -4,7 +4,7 @@ Lightweight production operations for intake, email, analytics, intro links, and
 
 ## Where errors show up
 
-- **Admin Ops tab:** `/admin` → **Ops** shows the latest 10 `app_errors` rows, unresolved count, source, severity, timestamp, message, and a **Mark resolved** action.
+- **Admin Ops tab:** `/admin` → **Ops** shows the latest 60 `app_errors` rows (with filters and a detail drawer), unresolved count, normalized codes, and **Mark resolved** with an optional note.
 - **Server logs:** API routes still write structured console errors when `app_errors` inserts fail.
 - **Health check:** `GET /api/health` returns safe JSON with app name, timestamp, version, and boolean env checks only.
 

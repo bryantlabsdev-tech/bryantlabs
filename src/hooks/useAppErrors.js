@@ -14,9 +14,11 @@ async function fetchAppErrors() {
   const supabase = getSupabaseClient()
   const { data, error } = await supabase
     .from("app_errors")
-    .select("id, created_at, source, severity, message, details, resolved, resolved_at")
+    .select(
+      "id, created_at, source, severity, message, details, resolved, resolved_at, resolution_note",
+    )
     .order("created_at", { ascending: false })
-    .limit(10)
+    .limit(60)
 
   if (error) {
     throw error
@@ -113,20 +115,28 @@ export function useAppErrors() {
     }
   }, [])
 
-  const resolveError = useCallback(async (errorId) => {
+  const resolveError = useCallback(async (errorId, resolutionNote) => {
     setResolvingErrorId(errorId)
 
     try {
       const supabase = getSupabaseClient()
       const resolvedAt = new Date().toISOString()
+      const trimmedNote =
+        typeof resolutionNote === "string" && resolutionNote.trim()
+          ? resolutionNote.trim().slice(0, 500)
+          : null
+
       const { data, error: updateError } = await supabase
         .from("app_errors")
         .update({
           resolved: true,
           resolved_at: resolvedAt,
+          resolution_note: trimmedNote,
         })
         .eq("id", errorId)
-        .select("id, created_at, source, severity, message, details, resolved, resolved_at")
+        .select(
+          "id, created_at, source, severity, message, details, resolved, resolved_at, resolution_note",
+        )
         .single()
 
       if (updateError) {
