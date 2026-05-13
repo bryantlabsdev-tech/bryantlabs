@@ -48,3 +48,10 @@ for update
 to authenticated
 using (public.is_approved_bryantlabs_admin())
 with check (public.is_approved_bryantlabs_admin());
+
+-- Intake health check (production):
+-- 1) Role `anon` must have INSERT on public.consultation_leads.
+-- 2) Policy `consultation_leads_anon_insert` must exist with WITH CHECK (true).
+-- 3) If public intake returns 502 after Turnstile, inspect app_errors for
+--    `intakeInsertFailureHint` (RLS vs missing column) and compare table columns
+--    to repo migrations under supabase/ (phone, stripe_customer_email, CRM fields).

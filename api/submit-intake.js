@@ -1,8 +1,4 @@
-import {
-  mapIntakePayloadToLeadRow,
-  readIntakePayload,
-  sendIntakeEmails,
-} from "./_lib/intakeEmail.js"
+import { readIntakePayload, sendIntakeEmails } from "./_lib/intakeEmail.js"
 import { logMissingEnvForRoute, routeEnvRequirements } from "./_lib/envCheck.js"
 import { logAppError } from "./_lib/logError.js"
 import { parseOptionalUsPhone } from "./_lib/optionalPhone.js"
@@ -11,7 +7,8 @@ import {
   getIntakeRateLimitKey,
 } from "./_lib/rateLimit.js"
 import {
-  insertConsultationLead,
+  extractIntakeInsertFailureHint,
+  insertIntakeConsultationLead,
   serializeSupabaseInsertError,
   trackServerSiteEvent,
 } from "./_lib/supabaseServer.js"
@@ -202,18 +199,12 @@ async function handleSubmitIntake(req, res) {
 
   payload.phone = phoneCheck.value
 
-  let insertRow = null
+  const insertResult = await insertIntakeConsultationLead(payload)
 
-  try {
-    insertRow = mapIntakePayloadToLeadRow(payload)
-    logIntakeDiagnostic("insert_row", {
-      keys: Object.keys(insertRow),
-      emailDomain: emailDomain(payload.email),
-    })
-
-    await insertConsultationLead(insertRow)
-  } catch (error) {
-    const supabaseErr = serializeSupabaseInsertError(error)
+  if (!insertResult.ok) {
+    const supabaseErr = serializeSupabaseInsertError(insertResult.error)
+    const failureHint =
+      insertResult.failureHint ?? extractIntakeInsertFailureHint(insertResult.error)
 
     await safeLogAppError({
       source: "submit-intake",
@@ -221,20 +212,44 @@ async function handleSubmitIntake(req, res) {
       details: {
         reason: "supabase_insert_failed",
         supabase: supabaseErr,
+        supabaseMessage: supabaseErr.message,
+        supabaseCode: supabaseErr.code,
+        supabaseDetails: supabaseErr.details,
+        supabaseHint: supabaseErr.hint,
+        intakeInsertFailureHint: failureHint,
+        intakeInsertAttemptLog: insertResult.attemptLog,
         emailDomain: emailDomain(payload.email),
-        insertKeys: insertRow ? Object.keys(insertRow) : [],
         sessionId: payload.sessionId || null,
       },
     })
 
-    console.error("[Bryant Labs] submit-intake insert failed", supabaseErr)
+    console.error("[Bryant Labs] submit-intake insert exhausted fallbacks", {
+      supabase: supabaseErr,
+      intakeInsertFailureHint: failureHint,
+      attemptCount: insertResult.attemptLog?.length ?? 0,
+      lastAttemptKeys: insertResult.attemptKeys,
+    })
 
     return res.status(502).json({
       error: SAVE_FAILURE_MESSAGE,
       code: "save_failed",
-      ...(INTAKE_DIAGNOSTIC ? { _diagnostic: { supabase: supabaseErr } } : {}),
+      ...(INTAKE_DIAGNOSTIC
+        ? {
+            _diagnostic: {
+              supabase: supabaseErr,
+              intakeInsertFailureHint: failureHint,
+              intakeInsertAttemptLog: insertResult.attemptLog,
+            },
+          }
+        : {}),
     })
   }
+
+  logIntakeDiagnostic("insert_ok", {
+    attemptIndex: insertResult.attemptIndex,
+    keys: insertResult.attemptKeys,
+    emailDomain: emailDomain(payload.email),
+  })
 
   let emailResult
 

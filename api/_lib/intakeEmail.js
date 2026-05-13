@@ -106,6 +106,31 @@ function omitUndefined(record) {
   )
 }
 
+/**
+ * Columns included on the primary intake insert (canonical app shape).
+ * CRM-only columns (last_contacted_at, next_follow_up_at, etc.) are never sent here.
+ */
+export const INTAKE_CONSULTATION_LEADS_INSERT_COLUMNS = [
+  "full_name",
+  "email",
+  "phone",
+  "company_brand",
+  "selected_session_id",
+  "selected_session_name",
+  "selected_session_price_cents",
+  "selected_session_price_label",
+  "project_summary",
+  "audience",
+  "core_features",
+  "platform_needed",
+  "desired_timeline",
+  "budget_range",
+  "reference_links",
+  "additional_notes",
+  "status",
+  "stripe_customer_email",
+]
+
 export function mapIntakePayloadToLeadRow(payload) {
   return omitUndefined({
     full_name: payload.fullName,
@@ -127,6 +152,83 @@ export function mapIntakePayloadToLeadRow(payload) {
     status: "new",
     stripe_customer_email: payload.email,
   })
+}
+
+/** Intake without optional columns that older DBs often lack (phone, long text refs, Stripe mirror). */
+export function mapIntakePayloadToReducedLeadRow(payload) {
+  return omitUndefined({
+    full_name: payload.fullName,
+    email: payload.email,
+    company_brand: payload.company || null,
+    selected_session_id: payload.sessionId,
+    selected_session_name: payload.sessionName,
+    selected_session_price_cents: payload.sessionPriceCents,
+    selected_session_price_label: payload.sessionPriceLabel,
+    project_summary: payload.projectSummary,
+    audience: payload.audience,
+    core_features: payload.coreFeatures,
+    platform_needed: payload.platform || null,
+    desired_timeline: payload.timeline,
+    budget_range: payload.budgetRange || null,
+    status: "new",
+  })
+}
+
+/** Ultra-narrow row for legacy schemas missing session / audience columns. */
+export function mapIntakePayloadToMinimalLeadRow(payload) {
+  return omitUndefined({
+    full_name: payload.fullName,
+    email: payload.email,
+    company_brand: payload.company || null,
+    project_summary: payload.projectSummary,
+    platform_needed: payload.platform || null,
+    budget_range: payload.budgetRange || null,
+    status: "new",
+  })
+}
+
+/** Last-resort capture: identity + summary only. */
+export function mapIntakePayloadToBareLeadRow(payload) {
+  return omitUndefined({
+    full_name: payload.fullName,
+    email: payload.email,
+    project_summary: payload.projectSummary,
+    status: "new",
+  })
+}
+
+/**
+ * Ordered insert attempts: fullest schema first, then progressively smaller
+ * payloads when PostgREST reports missing / unknown columns (production drift).
+ */
+export function buildIntakeInsertAttemptRows(payload) {
+  const rows = []
+  const seen = new Set()
+
+  const add = (row) => {
+    const clean = omitUndefined(row)
+    const signature = JSON.stringify(Object.keys(clean).sort())
+
+    if (seen.has(signature)) {
+      return
+    }
+
+    seen.add(signature)
+    rows.push(clean)
+  }
+
+  const full = mapIntakePayloadToLeadRow(payload)
+  add(full)
+
+  const withoutStripe = { ...full }
+  delete withoutStripe.stripe_customer_email
+  add(withoutStripe)
+
+  add(mapIntakePayloadToReducedLeadRow(payload))
+  add(mapIntakePayloadToMinimalLeadRow(payload))
+  add(mapIntakePayloadToBareLeadRow(payload))
+
+  return rows
 }
 
 function createTransport() {

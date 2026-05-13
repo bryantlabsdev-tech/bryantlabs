@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js"
+import { buildIntakeInsertAttemptRows } from "./intakeEmail.js"
 import { shouldTrackServerAnalytics } from "./shouldTrackAnalytics.js"
 
 export function getServerSupabaseClient() {
@@ -70,45 +71,144 @@ function isProbableMissingColumnError(error) {
 }
 
 /**
- * Inserts a public intake row using anon RLS. Retries without optional columns
- * when PostgREST reports an unknown column (production schema behind migrations).
+ * Parse PostgREST / Postgres errors for ops logs (no secrets).
+ * Surfaces failing column name when present in the server message.
  */
-export async function insertConsultationLead(row) {
+export function extractIntakeInsertFailureHint(error) {
+  const msg = String(error?.message ?? "")
+  const lower = msg.toLowerCase()
+
+  if (lower.includes("row-level security") || lower.includes("violates row-security")) {
+    return { kind: "rls", summary: msg.slice(0, 600) }
+  }
+
+  if (lower.includes("duplicate key") || lower.includes("unique constraint")) {
+    return { kind: "unique", summary: msg.slice(0, 600) }
+  }
+
+  let match = msg.match(/null value in column "([^"]+)"/i)
+
+  if (match) {
+    return { kind: "not_null", column: match[1], summary: msg.slice(0, 600) }
+  }
+
+  match = msg.match(/column "([^"]+)" (?:of relation|does not exist)/i)
+
+  if (match) {
+    return { kind: "column", column: match[1], summary: msg.slice(0, 600) }
+  }
+
+  match = msg.match(/Could not find the '([^']+)' column/i)
+
+  if (match) {
+    return { kind: "unknown_column", column: match[1], summary: msg.slice(0, 600) }
+  }
+
+  return { kind: "unknown", summary: msg.slice(0, 600) }
+}
+
+const INTAKE_INSERT_VERBOSE =
+  process.env.INTAKE_INSERT_VERBOSE_LOG === "true" ||
+  process.env.INTAKE_DIAGNOSTIC_LOG === "true"
+
+/**
+ * Public intake: try full payload first, then smaller rows when PostgREST
+ * reports missing/unknown columns (production schema behind repo migrations).
+ * Does not retry on RLS, unique constraint, or NOT NULL (smaller rows would not help).
+ */
+export async function insertIntakeConsultationLead(payload) {
   const supabase = getServerSupabaseClient()
 
   if (!supabase) {
-    throw new Error("Supabase is not configured.")
+    return {
+      ok: false,
+      error: new Error("Supabase is not configured."),
+      attemptLog: [],
+      failureHint: { kind: "config", summary: "Missing SUPABASE_URL / SUPABASE_ANON_KEY" },
+      attemptIndex: null,
+      attemptKeys: null,
+    }
   }
 
-  const cleanRow = stripUndefinedDeep(row)
-
-  const attempts = [cleanRow]
-  const withoutStripe = { ...cleanRow }
-  delete withoutStripe.stripe_customer_email
-
-  if (Object.keys(withoutStripe).length < Object.keys(cleanRow).length) {
-    attempts.push(withoutStripe)
-  }
-
+  const attemptRows = buildIntakeInsertAttemptRows(payload)
+  const attemptLog = []
   let lastError = null
 
-  for (let i = 0; i < attempts.length; i += 1) {
-    const { error } = await supabase.from("consultation_leads").insert([attempts[i]])
+  for (let i = 0; i < attemptRows.length; i += 1) {
+    const row = stripUndefinedDeep(attemptRows[i])
+    const keys = Object.keys(row)
+    const { error } = await supabase.from("consultation_leads").insert([row])
 
     if (!error) {
-      return
+      attemptLog.push({
+        index: i,
+        keys,
+        success: true,
+        supabase: null,
+        failureHint: null,
+      })
+
+      if (INTAKE_INSERT_VERBOSE) {
+        console.info("[Bryant Labs] intake insert succeeded", {
+          attemptIndex: i,
+          failingPayloadKeysResolved: keys,
+        })
+      }
+
+      return {
+        ok: true,
+        error: null,
+        attemptLog,
+        failureHint: null,
+        attemptIndex: i,
+        attemptKeys: keys,
+      }
     }
 
     lastError = error
+    const serialized = serializeSupabaseInsertError(error)
+    const failureHint = extractIntakeInsertFailureHint(error)
 
-    const canRetry = i < attempts.length - 1 && isProbableMissingColumnError(error)
+    attemptLog.push({
+      index: i,
+      keys,
+      success: false,
+      supabase: serialized,
+      failureHint,
+    })
+
+    console.error("[Bryant Labs] intake insert attempt failed", {
+      attemptIndex: i,
+      failingPayloadKeys: keys,
+      supabaseMessage: serialized.message,
+      supabaseCode: serialized.code,
+      supabaseDetails: serialized.details,
+      supabaseHint: serialized.hint,
+      failureHint,
+    })
+
+    const canRetry = i < attemptRows.length - 1 && isProbableMissingColumnError(error)
 
     if (!canRetry) {
-      throw lastError
+      return {
+        ok: false,
+        error: lastError,
+        attemptLog,
+        failureHint,
+        attemptIndex: null,
+        attemptKeys: keys,
+      }
     }
   }
 
-  throw lastError ?? new Error("Supabase insert failed with no error object.")
+  return {
+    ok: false,
+    error: lastError ?? new Error("Supabase insert failed with no error object."),
+    attemptLog,
+    failureHint: extractIntakeInsertFailureHint(lastError),
+    attemptIndex: null,
+    attemptKeys: attemptLog.length ? attemptLog[attemptLog.length - 1].keys : null,
+  }
 }
 
 export async function trackServerSiteEvent({
