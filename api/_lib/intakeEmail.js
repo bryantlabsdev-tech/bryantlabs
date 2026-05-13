@@ -100,8 +100,14 @@ export function readIntakePayload(body) {
   }
 }
 
+function omitUndefined(record) {
+  return Object.fromEntries(
+    Object.entries(record).filter(([, value]) => value !== undefined),
+  )
+}
+
 export function mapIntakePayloadToLeadRow(payload) {
-  return {
+  return omitUndefined({
     full_name: payload.fullName,
     email: payload.email,
     phone: payload.phone || null,
@@ -120,7 +126,7 @@ export function mapIntakePayloadToLeadRow(payload) {
     additional_notes: payload.additionalNotes || null,
     status: "new",
     stripe_customer_email: payload.email,
-  }
+  })
 }
 
 function createTransport() {

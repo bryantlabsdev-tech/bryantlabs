@@ -1,3 +1,36 @@
+/**
+ * Best-effort client IP for logging or optional Turnstile `remoteip`.
+ * Prefer headers set by the edge (Cloudflare) before generic forward chains,
+ * which can point at a proxy instead of the visitor and break siteverify.
+ */
+export function getRequestIp(req) {
+  const cf = String(req.headers["cf-connecting-ip"] ?? "").trim()
+  if (cf) {
+    return cf
+  }
+
+  const trueClient = String(req.headers["true-client-ip"] ?? "").trim()
+  if (trueClient) {
+    return trueClient
+  }
+
+  const realIp = String(req.headers["x-real-ip"] ?? "").trim()
+  if (realIp) {
+    return realIp
+  }
+
+  const forwardedFor = String(req.headers["x-forwarded-for"] ?? "")
+    .split(",")[0]
+    .trim()
+
+  return forwardedFor || null
+}
+
+/**
+ * Cloudflare siteverify: `remoteip` is optional. Sending a wrong IP (common
+ * behind multi-hop proxies) can cause `success: false` even when the widget
+ * succeeded. Opt in with TURNSTILE_SEND_REMOTE_IP=true when you trust the IP.
+ */
 export async function verifyTurnstileToken(token, remoteIp) {
   const secretKey = process.env.TURNSTILE_SECRET_KEY
 
@@ -17,7 +50,9 @@ export async function verifyTurnstileToken(token, remoteIp) {
     response: token,
   })
 
-  if (remoteIp) {
+  const sendRemoteIp = process.env.TURNSTILE_SEND_REMOTE_IP === "true"
+
+  if (sendRemoteIp && remoteIp) {
     params.set("remoteip", remoteIp)
   }
 
@@ -30,11 +65,24 @@ export async function verifyTurnstileToken(token, remoteIp) {
       body: params,
     })
 
-    const result = await response.json()
+    const result = await response.json().catch(() => ({}))
+
+    if (!response.ok) {
+      return {
+        success: false,
+        error: `siteverify HTTP ${response.status}`,
+        httpStatus: response.status,
+        errorCodes: result["error-codes"] ?? null,
+      }
+    }
+
+    const errorCodes = result["error-codes"] ?? null
 
     return {
       success: Boolean(result.success),
-      error: result["error-codes"]?.join(", ") ?? null,
+      error: Array.isArray(errorCodes) ? errorCodes.join(", ") : null,
+      errorCodes,
+      httpStatus: response.status,
     }
   } catch (error) {
     return {
@@ -42,12 +90,4 @@ export async function verifyTurnstileToken(token, remoteIp) {
       error: error.message,
     }
   }
-}
-
-export function getRequestIp(req) {
-  const forwardedFor = String(req.headers["x-forwarded-for"] ?? "")
-    .split(",")[0]
-    .trim()
-
-  return forwardedFor || null
 }

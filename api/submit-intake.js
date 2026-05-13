@@ -10,7 +10,11 @@ import {
   checkIntakeRateLimit,
   getIntakeRateLimitKey,
 } from "./_lib/rateLimit.js"
-import { insertConsultationLead, trackServerSiteEvent } from "./_lib/supabaseServer.js"
+import {
+  insertConsultationLead,
+  serializeSupabaseInsertError,
+  trackServerSiteEvent,
+} from "./_lib/supabaseServer.js"
 import { getRequestIp, verifyTurnstileToken } from "./_lib/turnstile.js"
 
 const TURNSTILE_FAILURE_MESSAGE =
@@ -20,11 +24,36 @@ const RATE_LIMIT_MESSAGE =
 const SAVE_FAILURE_MESSAGE =
   "We couldn’t save your intake. Please try again."
 
+const INTAKE_DIAGNOSTIC = process.env.INTAKE_DIAGNOSTIC_LOG === "true"
+
+function logIntakeDiagnostic(phase, data) {
+  if (!INTAKE_DIAGNOSTIC) {
+    return
+  }
+
+  console.info(`[Bryant Labs] intake diagnostic · ${phase}`, data)
+}
+
+function emailDomain(email) {
+  const value = String(email ?? "").trim()
+  const at = value.indexOf("@")
+
+  return at === -1 ? null : value.slice(at + 1)
+}
+
 function getRequestUserAgent(req) {
   return String(req.headers["user-agent"] ?? "").slice(0, 512)
 }
 
-export default async function handler(req, res) {
+async function safeLogAppError(entry) {
+  try {
+    await logAppError(entry)
+  } catch (logFailure) {
+    console.error("[Bryant Labs] submit-intake logAppError failed", logFailure)
+  }
+}
+
+async function handleSubmitIntake(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST")
     return res.status(405).json({ error: "Method not allowed" })
@@ -46,6 +75,13 @@ export default async function handler(req, res) {
     analyticsDisabled: payload.analyticsDisabled,
   }
 
+  logIntakeDiagnostic("read_payload", {
+    honeypot: Boolean(payload.websiteUrl),
+    hasTurnstileToken: Boolean(payload.turnstileToken?.length),
+    sessionId: payload.sessionId || null,
+    emailDomain: emailDomain(payload.email),
+  })
+
   if (payload.websiteUrl) {
     await trackServerSiteEvent({
       eventName: "intake_blocked_honeypot",
@@ -66,7 +102,7 @@ export default async function handler(req, res) {
       ...analyticsContext,
     })
 
-    await logAppError({
+    await safeLogAppError({
       source: "submit-intake",
       severity: "warn",
       message: "Intake submission blocked by rate limit.",
@@ -87,6 +123,13 @@ export default async function handler(req, res) {
     getRequestIp(req),
   )
 
+  logIntakeDiagnostic("turnstile", {
+    success: turnstileResult.success,
+    skipped: Boolean(turnstileResult.skipped),
+    error: turnstileResult.error ?? null,
+    httpStatus: turnstileResult.httpStatus ?? null,
+  })
+
   if (!turnstileResult.success) {
     await trackServerSiteEvent({
       eventName: "intake_blocked_turnstile",
@@ -94,7 +137,7 @@ export default async function handler(req, res) {
       ...analyticsContext,
     })
 
-    await logAppError({
+    await safeLogAppError({
       source: "submit-intake",
       severity: "warn",
       message: "Intake submission failed Turnstile verification.",
@@ -108,6 +151,13 @@ export default async function handler(req, res) {
     return res.status(400).json({
       error: TURNSTILE_FAILURE_MESSAGE,
       code: "turnstile_failed",
+      ...(INTAKE_DIAGNOSTIC
+        ? {
+            _diagnostic: {
+              turnstileError: turnstileResult.error ?? null,
+            },
+          }
+        : {}),
     })
   }
 
@@ -152,37 +202,57 @@ export default async function handler(req, res) {
 
   payload.phone = phoneCheck.value
 
+  let insertRow = null
+
   try {
-    await insertConsultationLead(mapIntakePayloadToLeadRow(payload))
+    insertRow = mapIntakePayloadToLeadRow(payload)
+    logIntakeDiagnostic("insert_row", {
+      keys: Object.keys(insertRow),
+      emailDomain: emailDomain(payload.email),
+    })
+
+    await insertConsultationLead(insertRow)
   } catch (error) {
-    await logAppError({
+    const supabaseErr = serializeSupabaseInsertError(error)
+
+    await safeLogAppError({
       source: "submit-intake",
       message: "Supabase intake insert failed.",
       details: {
         reason: "supabase_insert_failed",
-        error: error.message,
-        email: payload.email,
+        supabase: supabaseErr,
+        emailDomain: emailDomain(payload.email),
+        insertKeys: insertRow ? Object.keys(insertRow) : [],
+        sessionId: payload.sessionId || null,
       },
     })
+
+    console.error("[Bryant Labs] submit-intake insert failed", supabaseErr)
 
     return res.status(502).json({
       error: SAVE_FAILURE_MESSAGE,
       code: "save_failed",
+      ...(INTAKE_DIAGNOSTIC ? { _diagnostic: { supabase: supabaseErr } } : {}),
     })
   }
 
   let emailResult
 
   try {
+    logIntakeDiagnostic("email_start", { emailDomain: emailDomain(payload.email) })
     emailResult = await sendIntakeEmails(payload)
+    logIntakeDiagnostic("email_done", {
+      customerConfirmationSent: emailResult.customerConfirmationSent,
+      internalNotificationSent: emailResult.internalNotificationSent,
+    })
   } catch (error) {
-    await logAppError({
+    await safeLogAppError({
       source: "submit-intake",
       message: "Intake email dispatch failed after lead save.",
       details: {
         reason: "smtp_dispatch_failed",
-        error: error.message,
-        email: payload.email,
+        error: error?.message ?? String(error),
+        emailDomain: emailDomain(payload.email),
       },
     })
 
@@ -194,25 +264,25 @@ export default async function handler(req, res) {
   }
 
   if (!emailResult.customerConfirmationSent) {
-    await logAppError({
+    await safeLogAppError({
       source: "submit-intake",
       message: "Client confirmation email failed after lead save.",
       details: {
         reason: "customer_confirmation_failed",
-        email: payload.email,
+        emailDomain: emailDomain(payload.email),
         internalNotificationSent: emailResult.internalNotificationSent,
       },
     })
   }
 
   if (!emailResult.internalNotificationSent) {
-    await logAppError({
+    await safeLogAppError({
       source: "submit-intake",
       severity: "warn",
       message: "Internal intake notification email failed after lead save.",
       details: {
         reason: "internal_notification_failed",
-        email: payload.email,
+        emailDomain: emailDomain(payload.email),
         customerConfirmationSent: emailResult.customerConfirmationSent,
       },
     })
@@ -223,4 +293,35 @@ export default async function handler(req, res) {
     customerConfirmationSent: emailResult.customerConfirmationSent,
     internalNotificationSent: emailResult.internalNotificationSent,
   })
+}
+
+export default async function handler(req, res) {
+  try {
+    return await handleSubmitIntake(req, res)
+  } catch (fatal) {
+    console.error("[Bryant Labs] submit-intake unhandled exception", fatal)
+
+    await safeLogAppError({
+      source: "submit-intake",
+      message: "submit-intake unhandled exception.",
+      details: {
+        reason: "unhandled",
+        message: fatal?.message ?? String(fatal),
+      },
+    })
+
+    if (!res.headersSent) {
+      return res.status(500).json({
+        error: SAVE_FAILURE_MESSAGE,
+        code: "server_error",
+        ...(INTAKE_DIAGNOSTIC
+          ? {
+              _diagnostic: {
+                message: fatal?.message ?? String(fatal),
+              },
+            }
+          : {}),
+      })
+    }
+  }
 }
