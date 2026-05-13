@@ -15,6 +15,7 @@ import {
   SessionIntakeError,
   submitSessionIntake,
 } from "../../lib/submitSessionIntake"
+import { parseOptionalUsPhone } from "../../lib/optionalPhone"
 import { trackIntakeStarted } from "../../lib/analytics"
 import Button from "../ui/Button"
 import TurnstileWidget from "../ui/TurnstileWidget"
@@ -118,11 +119,21 @@ export default function Contact() {
       return
     }
 
+    const formData = new FormData(form)
+    const phoneRaw = String(formData.get("phone") ?? "").trim()
+    const phoneCheck = parseOptionalUsPhone(phoneRaw)
+
+    if (!phoneCheck.ok) {
+      setSubmitError(
+        "Phone number doesn’t look valid. Leave it blank or enter a 10-digit US number.",
+      )
+      return
+    }
+
     setFieldErrors({})
     setIsSubmitting(true)
 
     try {
-      const formData = new FormData(form)
       const { success, checkoutUrl } = await submitSessionIntake({
         session: selectedSession,
         formData,
@@ -219,6 +230,20 @@ export default function Contact() {
                       placeholder="you@email.com"
                       required
                     />
+                  </div>
+                  <div>
+                    <FormField
+                      label="Phone Number (Optional)"
+                      name="phone"
+                      type="tel"
+                      inputMode="tel"
+                      autoComplete="tel"
+                      placeholder="(555) 555-5555"
+                      optional
+                    />
+                    <p className="mt-1.5 text-xs leading-relaxed text-white/45">
+                      For faster follow-up or intro call scheduling.
+                    </p>
                   </div>
                   <FormField
                     label="Company or Brand"

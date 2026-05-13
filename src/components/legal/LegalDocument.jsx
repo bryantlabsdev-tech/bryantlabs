@@ -37,8 +37,8 @@ export default function LegalDocument({
               <section key={section.heading}>
                 <h2 className="text-xl font-semibold text-white">{section.heading}</h2>
                 <div className="mt-4 space-y-4 text-sm leading-relaxed text-white/75 sm:text-base">
-                  {section.paragraphs.map((paragraph) => (
-                    <p key={paragraph}>{paragraph}</p>
+                  {section.paragraphs.map((paragraph, index) => (
+                    <p key={`${section.heading}-${index}`}>{paragraph}</p>
                   ))}
                 </div>
               </section>

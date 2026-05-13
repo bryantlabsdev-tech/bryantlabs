@@ -1,6 +1,14 @@
 import { Search } from "lucide-react"
 import { useMemo, useState } from "react"
 import { LEAD_STATUSES, normalizeLeadStatus } from "../../config/admin"
+import {
+  formatFollowUpLine,
+  formatLastContactedLine,
+  getLeadNextAction,
+  getLeadSurfaceBadges,
+} from "../../lib/crmLeadHelpers"
+import Button from "../ui/Button"
+import LeadSurfaceBadges from "./LeadSurfaceBadges"
 import LeadsEmptyState from "./LeadsEmptyState"
 import StatusSelect from "./StatusSelect"
 
@@ -37,6 +45,7 @@ function matchesSearch(lead, query) {
   const haystack = [
     lead.full_name,
     lead.email,
+    lead.phone,
     lead.company_brand,
     lead.selected_session_name,
     lead.project_summary,
@@ -52,6 +61,11 @@ function matchesSearch(lead, query) {
 }
 
 function LeadCard({ lead, updatingLeadId, onLeadSelect, onStatusChange }) {
+  const surfaceBadges = getLeadSurfaceBadges(lead)
+  const nextAction = getLeadNextAction(lead)
+  const followUpLine = formatFollowUpLine(lead)
+  const lastContactedLine = formatLastContactedLine(lead)
+
   return (
     <button
       type="button"
@@ -62,14 +76,34 @@ function LeadCard({ lead, updatingLeadId, onLeadSelect, onStatusChange }) {
         <div className="min-w-0">
           <p className="text-base font-semibold text-white">{lead.full_name}</p>
           <p className="mt-1 break-all text-sm text-muted">{lead.email}</p>
+          <p className="mt-2 text-sm font-medium text-white/85">
+            {lead.company_brand?.trim() ? lead.company_brand : "—"}
+            <span className="ml-1.5 font-normal text-muted">· company</span>
+          </p>
         </div>
         <p className="shrink-0 text-xs text-muted">{formatDate(lead.created_at)}</p>
       </div>
 
-      <div className="mt-4 grid gap-3 text-sm text-white/75">
+      <p className="mt-3 text-xs font-medium leading-snug text-cyan-100/90">{nextAction}</p>
+
+      <div className="mt-2">
+        <LeadSurfaceBadges badges={surfaceBadges} />
+      </div>
+
+      <div className="mt-4 grid gap-2 text-xs text-white/65">
         <p>
-          <span className="text-muted">Company:</span> {lead.company_brand || "—"}
+          <span className="text-muted">Follow-up:</span>{" "}
+          <span className={followUpLine?.includes("overdue") ? "text-rose-200/90" : "text-white/80"}>
+            {followUpLine ?? "Not set"}
+          </span>
         </p>
+        <p>
+          <span className="text-muted">Last contact:</span>{" "}
+          <span className="text-white/80">{lastContactedLine}</span>
+        </p>
+      </div>
+
+      <div className="mt-4 grid gap-3 text-sm text-white/75">
         <p>
           <span className="text-muted">Session:</span> {lead.selected_session_name}
         </p>
@@ -91,6 +125,9 @@ function LeadCard({ lead, updatingLeadId, onLeadSelect, onStatusChange }) {
 
 export default function LeadsTable({
   leads,
+  hasMore,
+  loadingMore,
+  onLoadMore,
   updatingLeadId,
   onLeadSelect,
   onStatusChange,
@@ -124,7 +161,7 @@ export default function LeadsTable({
             type="search"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="Search leads by name, email, company, or summary"
+            placeholder="Search leads by name, email, phone, company, or summary"
             className="w-full rounded-2xl border border-white/10 bg-black/20 py-3 pl-11 pr-4 text-base text-white outline-none transition placeholder:text-white/30 focus:border-indigo-400/50 sm:text-sm"
           />
         </label>
@@ -166,7 +203,7 @@ export default function LeadsTable({
 
           <div className="hidden overflow-hidden rounded-3xl border border-white/10 bg-black/20 md:block">
             <div className="max-h-[70vh] overflow-x-auto overflow-y-auto overscroll-x-contain">
-              <table className="min-w-[72rem] w-full divide-y divide-white/10 text-left text-sm">
+              <table className="min-w-[64rem] w-full divide-y divide-white/10 text-left text-sm">
                 <thead className="sticky top-0 z-10 bg-elevated/95 text-xs uppercase tracking-[0.18em] text-muted backdrop-blur-xl">
                   <tr>
                     <th className="px-4 py-4 font-medium">Created</th>
@@ -178,54 +215,77 @@ export default function LeadsTable({
                     <th className="px-4 py-4 font-medium">Platform</th>
                     <th className="px-4 py-4 font-medium">Timeline</th>
                     <th className="px-4 py-4 font-medium">Budget</th>
-                    <th className="px-4 py-4 font-medium">Status</th>
-                    <th className="px-4 py-4 font-medium">Payment</th>
+                    <th className="min-w-[11rem] px-4 py-4 font-medium">Pipeline</th>
+                    <th className="min-w-[9rem] px-4 py-4 font-medium">Next action</th>
+                    <th className="min-w-[10rem] px-4 py-4 font-medium">Touch</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/8">
-                  {filteredLeads.map((lead) => (
-                    <tr
-                      key={lead.id}
-                      onClick={() => onLeadSelect(lead)}
-                      className="cursor-pointer transition hover:bg-white/[0.05]"
-                    >
-                      <td className="px-4 py-4 whitespace-nowrap text-muted">
-                        {formatDate(lead.created_at)}
-                      </td>
-                      <td className="px-4 py-4 font-medium text-white">
-                        {lead.full_name}
-                      </td>
-                      <td className="px-4 py-4 text-white/80">{lead.email}</td>
-                      <td className="px-4 py-4 text-white/80">
-                        {lead.company_brand || "—"}
-                      </td>
-                      <td className="px-4 py-4 text-white/80">
-                        {lead.selected_session_name}
-                      </td>
-                      <td className="max-w-xs px-4 py-4 text-white/70">
-                        {truncateText(lead.project_summary)}
-                      </td>
-                      <td className="px-4 py-4 text-white/80">
-                        {lead.platform_needed || "—"}
-                      </td>
-                      <td className="px-4 py-4 text-white/80">
-                        {lead.desired_timeline || "—"}
-                      </td>
-                      <td className="px-4 py-4 text-white/80">
-                        {lead.budget_range || "—"}
-                      </td>
-                      <td className="px-4 py-4">
-                        <StatusSelect
-                          value={lead.status}
-                          disabled={updatingLeadId === lead.id}
-                          onChange={(nextStatus) => onStatusChange(lead, nextStatus)}
-                        />
-                      </td>
-                      <td className="px-4 py-4 text-white/80">
-                        {lead.payment_status || "—"}
-                      </td>
-                    </tr>
-                  ))}
+                  {filteredLeads.map((lead) => {
+                    const surfaceBadges = getLeadSurfaceBadges(lead)
+                    const nextAction = getLeadNextAction(lead)
+                    const followUpLine = formatFollowUpLine(lead)
+                    const lastContactedLine = formatLastContactedLine(lead)
+
+                    return (
+                      <tr
+                        key={lead.id}
+                        onClick={() => onLeadSelect(lead)}
+                        className="cursor-pointer transition hover:bg-white/[0.05]"
+                      >
+                        <td className="px-4 py-4 whitespace-nowrap text-muted">
+                          {formatDate(lead.created_at)}
+                        </td>
+                        <td className="px-4 py-4 font-medium text-white">
+                          {lead.full_name}
+                        </td>
+                        <td className="px-4 py-4 text-white/80">{lead.email}</td>
+                        <td className="px-4 py-4 text-white/80">
+                          {lead.company_brand || "—"}
+                        </td>
+                        <td className="px-4 py-4 text-white/80">
+                          {lead.selected_session_name}
+                        </td>
+                        <td className="max-w-xs px-4 py-4 text-white/70">
+                          {truncateText(lead.project_summary)}
+                        </td>
+                        <td className="px-4 py-4 text-white/80">
+                          {lead.platform_needed || "—"}
+                        </td>
+                        <td className="px-4 py-4 text-white/80">
+                          {lead.desired_timeline || "—"}
+                        </td>
+                        <td className="px-4 py-4 text-white/80">
+                          {lead.budget_range || "—"}
+                        </td>
+                        <td className="px-4 py-4 align-top">
+                          <div className="mb-2">
+                            <LeadSurfaceBadges badges={surfaceBadges} />
+                          </div>
+                          <StatusSelect
+                            value={lead.status}
+                            disabled={updatingLeadId === lead.id}
+                            onChange={(nextStatus) => onStatusChange(lead, nextStatus)}
+                          />
+                        </td>
+                        <td className="px-4 py-4 align-top text-sm leading-snug text-cyan-100/85">
+                          {nextAction}
+                        </td>
+                        <td className="px-4 py-4 align-top text-xs leading-relaxed">
+                          <p
+                            className={
+                              followUpLine?.includes("overdue")
+                                ? "font-medium text-rose-200/90"
+                                : "text-white/75"
+                            }
+                          >
+                            {followUpLine ?? "No follow-up set"}
+                          </p>
+                          <p className="mt-1.5 text-muted">{lastContactedLine}</p>
+                        </td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             </div>
@@ -233,8 +293,31 @@ export default function LeadsTable({
         </>
       )}
 
+      {hasMore ? (
+        <div className="flex justify-center">
+          <Button
+            variant="secondary"
+            type="button"
+            onClick={() => void onLoadMore()}
+            disabled={loadingMore}
+            className="min-w-[10.5rem]"
+          >
+            {loadingMore ? "Loading…" : "Load more"}
+          </Button>
+        </div>
+      ) : null}
+
       <p className="text-xs text-muted">
-        Showing {filteredLeads.length} of {leads.length} leads · newest first
+        {hasFilters ? (
+          <>
+            Showing {filteredLeads.length} matching of {leads.length} loaded
+          </>
+        ) : (
+          <>Showing {filteredLeads.length} of {leads.length} loaded</>
+        )}
+        {hasMore ? " · more available" : " · end of list"}
+        {" · "}
+        <span className="text-white/35">Newest first</span>
       </p>
     </div>
   )

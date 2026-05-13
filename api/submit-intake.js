@@ -5,6 +5,7 @@ import {
 } from "./_lib/intakeEmail.js"
 import { logMissingEnvForRoute, routeEnvRequirements } from "./_lib/envCheck.js"
 import { logAppError } from "./_lib/logError.js"
+import { parseOptionalUsPhone } from "./_lib/optionalPhone.js"
 import {
   checkIntakeRateLimit,
   getIntakeRateLimitKey,
@@ -138,6 +139,18 @@ export default async function handler(req, res) {
       missingFields: ["sessionPriceCents"],
     })
   }
+
+  const phoneCheck = parseOptionalUsPhone(payload.phone)
+
+  if (!phoneCheck.ok) {
+    return res.status(400).json({
+      error:
+        "If you include a phone number, use a 10-digit US number (with or without formatting) or leave the field blank.",
+      code: "invalid_phone",
+    })
+  }
+
+  payload.phone = phoneCheck.value
 
   try {
     await insertConsultationLead(mapIntakePayloadToLeadRow(payload))

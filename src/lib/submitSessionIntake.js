@@ -25,6 +25,7 @@ function buildIntakePayload(session, formData, turnstileToken) {
     planningSession: session.name,
     fullName: String(formData.get("fullName") ?? "").trim(),
     email: String(formData.get("email") ?? "").trim(),
+    phone: String(formData.get("phone") ?? "").trim(),
     company: String(formData.get("company") ?? "").trim(),
     projectSummary: String(formData.get("projectSummary") ?? "").trim(),
     audience: String(formData.get("audience") ?? "").trim(),

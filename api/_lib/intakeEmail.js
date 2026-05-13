@@ -17,6 +17,16 @@ function formatField(label, value) {
   return `<p style="margin:0 0 12px;"><strong>${label}:</strong> ${safeValue}</p>`
 }
 
+function formatFieldIfValue(label, value) {
+  const trimmed = String(value ?? "").trim()
+
+  if (!trimmed) {
+    return ""
+  }
+
+  return formatField(label, trimmed)
+}
+
 function buildClientEmailHtml({ fullName }) {
   const greeting = escapeHtml(fullName || "there")
 
@@ -39,6 +49,7 @@ function buildInternalEmailHtml(payload) {
       <h1 style="margin:0 0 16px;font-size:20px;">New Bryant Labs intake submitted</h1>
       ${formatField("Name", payload.fullName)}
       ${formatField("Email", payload.email)}
+      ${formatFieldIfValue("Phone", payload.phone)}
       ${formatField("Planning session preference", payload.planningSession)}
       ${formatField("Project summary", payload.projectSummary)}
       ${formatField("Platform", payload.platform)}
@@ -71,6 +82,7 @@ export function readIntakePayload(body) {
     budgetRange: String(body.budgetRange ?? body.budget ?? "").trim(),
     timeline: String(body.timeline ?? "").trim(),
     company: String(body.company ?? "").trim(),
+    phone: String(body.phone ?? "").trim(),
     audience: String(body.audience ?? "").trim(),
     coreFeatures: String(body.coreFeatures ?? "").trim(),
     referenceLinks: String(body.referenceLinks ?? body.references ?? "").trim(),
@@ -92,6 +104,7 @@ export function mapIntakePayloadToLeadRow(payload) {
   return {
     full_name: payload.fullName,
     email: payload.email,
+    phone: payload.phone || null,
     company_brand: payload.company || null,
     selected_session_id: payload.sessionId,
     selected_session_name: payload.sessionName,

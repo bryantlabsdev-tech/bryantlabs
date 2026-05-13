@@ -36,11 +36,15 @@ export default function AdminDashboardPage() {
   const {
     leads,
     loading,
+    loadingMore,
+    hasMore,
     error,
     reloadLeads,
+    loadMoreLeads,
     updateLeadStatus,
     updateLeadNotes,
     markIntroLinkScheduled,
+    updateFollowUp,
   } = useConsultationLeads()
   const {
     summary,
@@ -64,6 +68,7 @@ export default function AdminDashboardPage() {
   const [updatingLeadId, setUpdatingLeadId] = useState(null)
   const [savingNotesLeadId, setSavingNotesLeadId] = useState(null)
   const [sendingIntroLinkLeadId, setSendingIntroLinkLeadId] = useState(null)
+  const [savingFollowUpLeadId, setSavingFollowUpLeadId] = useState(null)
   const [statusError, setStatusError] = useState("")
   const [signingOut, setSigningOut] = useState(false)
   const [showResetAnalyticsConfirm, setShowResetAnalyticsConfirm] = useState(false)
@@ -113,6 +118,22 @@ export default function AdminDashboardPage() {
       )
     } finally {
       setSavingNotesLeadId(null)
+    }
+  }
+
+  const handleSaveFollowUp = async (lead, { nextFollowUpDate, followUpNote }) => {
+    setSavingFollowUpLeadId(lead.id)
+
+    try {
+      const updatedLead = await updateFollowUp(lead.id, {
+        nextFollowUpDate,
+        followUpNote,
+      })
+      setSelectedLead((current) =>
+        current?.id === updatedLead.id ? updatedLead : current,
+      )
+    } finally {
+      setSavingFollowUpLeadId(null)
     }
   }
 
@@ -330,6 +351,9 @@ export default function AdminDashboardPage() {
           ) : (
             <LeadsTable
               leads={leads}
+              hasMore={hasMore}
+              loadingMore={loadingMore}
+              onLoadMore={loadMoreLeads}
               updatingLeadId={updatingLeadId}
               onLeadSelect={setSelectedLead}
               onStatusChange={handleStatusChange}
@@ -343,9 +367,11 @@ export default function AdminDashboardPage() {
         onClose={() => setSelectedLead(null)}
         onStatusChange={handleStatusChange}
         onSaveNotes={handleSaveNotes}
+        onSaveFollowUp={handleSaveFollowUp}
         onSendIntroLink={handleSendIntroLink}
         updatingStatus={updatingLeadId === selectedLead?.id}
         savingNotes={savingNotesLeadId === selectedLead?.id}
+        savingFollowUp={savingFollowUpLeadId === selectedLead?.id}
         sendingIntroLink={sendingIntroLinkLeadId === selectedLead?.id}
       />
 
