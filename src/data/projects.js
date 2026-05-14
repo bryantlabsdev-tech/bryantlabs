@@ -1,16 +1,16 @@
 export const projects = [
   {
     name: "Ummah",
-    tagline: "Consumer social platform built for scale",
+    tagline: "Short-form social platform for web and mobile, built to scale",
     category: "Consumer Social Platform",
     badge: "Live Beta",
     description:
-      "Consumer social platform for web and mobile—short-form video, creator feeds, onboarding systems, deployment pipelines, and scalable content architecture.",
+      "Short-form social platform built with a TypeScript React architecture (Vite), Supabase as the primary backend for data and realtime services, and Capacitor-powered mobile deployment from the same product surface. Firebase Cloud Messaging provides native push infrastructure—complementing Supabase, not replacing it as the core platform backend.",
     highlights: [
-      "Short-form vertical video feed",
-      "Creator/user onboarding",
-      "Mobile app distribution",
-      "Scalable content and engagement systems",
+      "Realtime feeds and engagement-ready surfaces",
+      "Capacitor-powered mobile deployment alongside responsive web",
+      "Supabase-backed persistence and scalable backend orchestration",
+      "Native push delivery via Firebase Cloud Messaging (FCM)",
     ],
     links: [
       { label: "View Website", href: "https://theummah.app" },
@@ -19,7 +19,15 @@ export const projects = [
         href: "https://testflight.apple.com/join/eCgEaCGV",
       },
     ],
-    stack: ["Flutter", "Firebase", "Supabase", "Vercel", "TestFlight"],
+    stack: [
+      "TypeScript",
+      "React",
+      "Vite",
+      "Supabase",
+      "Capacitor",
+      "Tailwind CSS",
+      "TanStack Query",
+    ],
     theme: {
       gradient: "from-emerald-500 via-teal-500 to-green-600",
       glow: "rgba(16, 185, 129, 0.28)",
@@ -100,6 +108,7 @@ export const projects = [
       "All-in-one business operations tools",
     ],
     links: [
+      { label: "View Platform", href: "https://stack-less.vercel.app/" },
       {
         label: "iOS TestFlight",
         href: "https://testflight.apple.com/join/zbvZPNHE",
