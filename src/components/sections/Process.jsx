@@ -88,9 +88,8 @@ export default function Process() {
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <SectionBridge className="mb-8 sm:mb-10">
           <p className="text-sm leading-relaxed text-muted">
-            Above: shipped systems and live surfaces. Below: how Bryant Labs
-            sequences work—intake alignment, scoped milestones, and approvals
-            between phases—before you reach pricing or support options.
+            Shipped systems above; below is how work is sequenced—intake, milestones,
+            and approvals before pricing or support.
           </p>
         </SectionBridge>
 

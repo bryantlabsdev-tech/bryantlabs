@@ -1,6 +1,7 @@
 import Contact from "../components/sections/Contact"
 import Hero from "../components/sections/Hero"
 import ProofStrip from "../components/sections/ProofStrip"
+import StudioInspectionStrip from "../components/sections/StudioInspectionStrip"
 import Portfolio from "../components/sections/Portfolio"
 import Pricing from "../components/sections/Pricing"
 import Process from "../components/sections/Process"
@@ -16,6 +17,9 @@ export default function HomePage() {
       </ErrorBoundary>
       <ErrorBoundary sectionName="ProofStrip">
         <ProofStrip />
+      </ErrorBoundary>
+      <ErrorBoundary sectionName="StudioInspectionStrip">
+        <StudioInspectionStrip />
       </ErrorBoundary>
       <ErrorBoundary sectionName="Services">
         <Services />

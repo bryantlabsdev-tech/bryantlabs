@@ -19,6 +19,6 @@ export const proofStripItems = [
   },
   {
     title: "What you can open",
-    body: "Live sites and TestFlight links only where Bryant Labs publishes them; internal platforms stay private by design.",
+    body: "Internal builds stay portfolio-only; public web and TestFlight match what we publish and maintain.",
   },
 ]

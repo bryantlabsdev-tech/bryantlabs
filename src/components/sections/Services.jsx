@@ -15,7 +15,7 @@ export default function Services() {
         <SectionHeading
           eyebrow="Capabilities"
           title="Systems and surfaces we design, build, and run"
-          description="SaaS foundations, internal operations, field workflows, and AI-assisted products—milestone-based delivery, scoped engagements, and deployment-aware handoffs. We work best with operators who care about implementation fit and operational requirements, not slide-deckware."
+          description="SaaS foundations, internal operations, field workflows, and AI-assisted products—milestone delivery, scoped engagements, and deploy-ready handoffs. Best with teams that value implementation fit over slide-deckware."
         />
 
         <div className="mt-8 grid gap-3.5 sm:mt-12 sm:gap-5 md:grid-cols-2 xl:grid-cols-3">

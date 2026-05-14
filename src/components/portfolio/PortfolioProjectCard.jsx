@@ -11,10 +11,10 @@ function projectStackKey(project) {
   return project.slug ?? project.name
 }
 
-const FEATURED_DESKTOP_STACK = 8
-const FEATURED_MOBILE_STACK = 5
-const SUPPORTING_DESKTOP_STACK = 5
-const SUPPORTING_MOBILE_STACK = 3
+const FEATURED_DESKTOP_STACK = 7
+const FEATURED_MOBILE_STACK = 4
+const SUPPORTING_DESKTOP_STACK = 4
+const SUPPORTING_MOBILE_STACK = 2
 
 export default function PortfolioProjectCard({
   project,
@@ -161,7 +161,7 @@ export default function PortfolioProjectCard({
                   isFeatured ? "text-[10px] sm:mb-2.5" : "text-[9px] sm:text-[10px]"
                 }`}
               >
-                {project.stackLabel ?? "Tech stack"}
+                {project.stackLabel ?? (isFeatured ? "Architecture & workflows" : "Systems & tooling")}
               </p>
 
               <div className="hidden sm:block">

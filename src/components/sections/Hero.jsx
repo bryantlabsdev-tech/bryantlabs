@@ -120,8 +120,8 @@ export default function Hero() {
 
                 <div className="rounded-2xl border border-white/8 bg-gradient-to-br from-indigo-500/15 to-cyan-400/10 p-4">
                   <p className="text-sm text-white/75">
-                    Planning, design, development, and rollout in one studio
-                    lane—without adding another tool stack to manage.
+                    One lane for design, build, and rollout—without another vendor stack
+                    to coordinate.
                   </p>
                 </div>
               </div>

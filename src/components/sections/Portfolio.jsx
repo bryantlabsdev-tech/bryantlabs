@@ -26,11 +26,18 @@ export default function Portfolio() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           title="Platforms & systems we've shipped"
-          description="Stackless leads as the flagship contractor operations build; Ummah, TrackoraAI, and TrackoraHQ sit alongside it at the same engineering bar—social, subscription SaaS, and private internal tooling. Public web, mobile, and TestFlight links only where a build is shared publicly."
+          description="Stackless is the flagship contractor-operations build; Ummah, Trackora AI, and TrackoraHQ share the same delivery bar—social, subscription SaaS, and private internal tooling. Public links only where a surface is published."
         />
 
+        <ScrollReveal>
+          <p className="mx-auto mt-4 max-w-2xl text-center text-xs leading-relaxed text-white/45 sm:mt-5 sm:text-sm">
+            We optimize for operational clarity, scoped handoffs, and implementation
+            fit—software that stays legible after deploy, not stack theater.
+          </p>
+        </ScrollReveal>
+
         {featuredProject ? (
-          <div className="mt-8 sm:mt-14">
+          <div className="mt-7 sm:mt-12">
             <PortfolioProjectCard
               project={featuredProject}
               variant="featured"
@@ -49,7 +56,8 @@ export default function Portfolio() {
                 Supporting builds
               </p>
               <p className="mt-1 max-w-2xl text-xs leading-relaxed text-muted sm:text-sm">
-                Same delivery discipline—compressed layout for faster scanning.
+                Outcome-first summaries—stack tags stay capped; expand when you want
+                implementation detail.
               </p>
             </ScrollReveal>
 
@@ -76,9 +84,8 @@ export default function Portfolio() {
               What happens next
             </p>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted sm:text-base">
-              After you explore recent builds, here is the typical Bryant Labs
-              workflow—from intake through milestones—so you know how engagements
-              move forward before pricing and support options.
+              After builds, the engagement path below covers intake through milestones
+              before pricing and support.
             </p>
             <p className="mt-3 text-xs font-medium text-white/50">
               Continue to{" "}
