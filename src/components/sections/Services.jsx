@@ -1,11 +1,15 @@
 import { services } from "../../data/services"
+import { sectionSurface } from "../../lib/sectionSurfaces"
 import GlassCard from "../ui/GlassCard"
 import ScrollReveal from "../ui/ScrollReveal"
 import SectionHeading from "../ui/SectionHeading"
 
 export default function Services() {
   return (
-    <section id="services" className="py-16 sm:py-20 lg:py-24">
+    <section
+      id="services"
+      className={`relative py-16 sm:py-20 lg:py-24 ${sectionSurface.lift}`}
+    >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Services"

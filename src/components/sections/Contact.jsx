@@ -11,6 +11,7 @@ import {
   sessionValueCopy,
   strategySessions,
 } from "../../data/sessions"
+import { sectionSurface } from "../../lib/sectionSurfaces"
 import {
   SessionIntakeError,
   submitSessionIntake,
@@ -172,7 +173,10 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="py-16 sm:py-20 lg:py-24">
+    <section
+      id="contact"
+      className={`py-16 sm:py-20 lg:py-24 ${sectionSurface.settle}`}
+    >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Project intake"

@@ -1,5 +1,6 @@
 import { ExternalLink } from "lucide-react"
 import { projects } from "../../data/projects"
+import { sectionSurface } from "../../lib/sectionSurfaces"
 import ProjectMockup from "../portfolio/ProjectMockup"
 import Button from "../ui/Button"
 import ScrollReveal from "../ui/ScrollReveal"
@@ -11,7 +12,10 @@ function hasTestFlightLink(project) {
 
 export default function Portfolio() {
   return (
-    <section id="work" className="py-14 sm:py-20 lg:py-24">
+    <section
+      id="work"
+      className={`relative py-14 sm:py-20 lg:py-24 ${sectionSurface.band}`}
+    >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           title="Most Recent Builds"
@@ -81,6 +85,30 @@ export default function Portfolio() {
             </ScrollReveal>
           ))}
         </div>
+
+        <ScrollReveal className="mt-12 sm:mt-16">
+          <div className="relative overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.02] px-5 py-5 sm:px-7 sm:py-6">
+            <div className="pointer-events-none absolute -right-16 -top-20 h-40 w-40 rounded-full bg-indigo-500/10 blur-3xl" />
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-indigo-300/75">
+              What happens next
+            </p>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted sm:text-base">
+              After you explore recent builds, here is the typical Bryant Labs
+              workflow—from intake through milestones—so you know how engagements
+              move forward before pricing and support options.
+            </p>
+            <p className="mt-3 text-xs font-medium text-white/50">
+              Continue to{" "}
+              <a
+                href="/#process"
+                className="text-cyan-300/90 underline decoration-cyan-400/30 underline-offset-4 transition-colors hover:text-cyan-200"
+              >
+                engagement path
+              </a>{" "}
+              below.
+            </p>
+          </div>
+        </ScrollReveal>
       </div>
     </section>
   )
