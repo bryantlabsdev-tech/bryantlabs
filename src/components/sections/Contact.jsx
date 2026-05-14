@@ -6,6 +6,7 @@ import {
   intakeSubmitCta,
   sessionAfterSubmitCopy,
   sessionIntakeCopy,
+  sessionIntakeExpectationsCopy,
   sessionSidebarNote,
   sessionSuccessMessage,
   sessionValueCopy,
@@ -184,7 +185,13 @@ export default function Contact() {
           description={sessionValueCopy}
         />
 
-        <div className="mt-10 grid gap-6 sm:mt-14 lg:grid-cols-[1.45fr_0.85fr]">
+        <ScrollReveal className="mt-6 sm:mt-7">
+          <p className="max-w-3xl text-sm leading-relaxed text-muted sm:text-[0.9375rem]">
+            {sessionIntakeExpectationsCopy}
+          </p>
+        </ScrollReveal>
+
+        <div className="mt-8 grid gap-6 sm:mt-12 lg:grid-cols-[1.45fr_0.85fr]">
           <ScrollReveal>
             <GlassCard hover={false} className="p-5 sm:p-8">
               <p className="text-sm leading-relaxed text-muted">

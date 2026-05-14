@@ -31,6 +31,10 @@ export const strategySessions = [
 export const sessionValueCopy =
   "Share your project details and Bryant Labs will follow up with next steps after review."
 
+/** Expectations under intake heading — truthful, no SLA fabrication. */
+export const sessionIntakeExpectationsCopy =
+  "Intake is for fit and scope alignment—not instant booking. After review, Bryant Labs replies with next steps (and a complimentary intro call when it makes sense) before any milestone-based build commitment."
+
 export const sessionIntakeCopy =
   "Free intake for qualification only—not instant booking or development."
 

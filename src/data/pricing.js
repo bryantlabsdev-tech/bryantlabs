@@ -1,5 +1,5 @@
 export const pricingIntro =
-  "Indicative floors for how Bryant Labs typically scopes work—not fixed SKUs. Final investment depends on your requirements, integrations, and timeline; we align on scope before any build commitment."
+  "Indicative floors for how Bryant Labs typically scopes work—not fixed SKUs. Final investment depends on your requirements, integrations, and timeline; scope and implementation alignment are settled before any build commitment."
 
 /** Short editorial note under the heading (milestone model + scoping). */
 export const pricingEngagementNote =

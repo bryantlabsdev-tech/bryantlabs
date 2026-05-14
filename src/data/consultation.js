@@ -1,7 +1,7 @@
 export const projectForwardTitle = "How projects move forward"
 
 export const projectForwardIntro =
-  "Qualify with a free intake, align on scope, then move into milestone-based delivery when the fit is right."
+  "Free intake for fit and scope alignment, then milestone-based delivery with approvals between phases—paid discovery when requirements need hardening before a build quote."
 
 export const projectForwardSteps = [
   {

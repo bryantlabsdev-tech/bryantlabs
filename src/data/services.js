@@ -10,51 +10,51 @@ import {
 
 export const services = [
   {
-    title: "Custom Software Development",
+    title: "Engineered product systems",
     description:
-      "Purpose-built applications shaped around your operations—with room for AI-powered features when they genuinely add leverage.",
+      "Purpose-built software aligned to your operations—clear domains, APIs where they belong, and deployment paths that match how your team ships.",
     icon: Code2,
     accent: "from-violet-500/20 to-indigo-500/5",
   },
   {
-    title: "Mobile & Web Applications",
+    title: "Web & native client surfaces",
     description:
-      "Ship polished iOS, Android, and web experiences with performance, offline support, and UX that feels product-grade.",
+      "Responsive web and native-capable clients from a coherent product core—performance, access control, and release cadence treated as first-class concerns.",
     icon: Smartphone,
     accent: "from-cyan-500/20 to-blue-500/5",
   },
   {
-    title: "Business Systems",
+    title: "Internal operations platforms",
     description:
-      "Internal portals, client tools, and operational software designed around how your team actually works.",
+      "Portals, role-based tools, and workflow software for how work actually moves—replacing ad-hoc spreadsheets with accountable, auditable systems.",
     icon: Building2,
     accent: "from-emerald-500/20 to-teal-500/5",
   },
   {
-    title: "SaaS Platforms",
+    title: "SaaS infrastructure & monetization",
     description:
-      "Subscription-ready foundations with auth, billing hooks, and architecture that can grow beyond the first release.",
+      "Subscription-ready foundations: authentication, entitlements, Stripe-aware billing hooks, and data models that can grow past the first release.",
     icon: Rocket,
     accent: "from-indigo-500/20 to-purple-500/5",
   },
   {
-    title: "Workflow Automation",
+    title: "Automation & integration layers",
     description:
-      "Connect APIs, triggers, and approvals so repetitive work runs reliably in the background.",
+      "Reliable orchestration across APIs, webhooks, and human approvals—background jobs and guardrails so operational work stops living in inboxes.",
     icon: Workflow,
     accent: "from-amber-500/20 to-orange-500/5",
   },
   {
-    title: "Internal Dashboards",
+    title: "Operational dashboards & reporting",
     description:
-      "Replace scattered spreadsheets with tailored pipelines, reporting, and role-based views built around your process.",
+      "Tailored visibility for leadership and operators—pipelines, KPIs, and drill-downs grounded in your data model, not generic chart widgets.",
     icon: LayoutDashboard,
     accent: "from-rose-500/20 to-pink-500/5",
   },
   {
-    title: "Modern Digital Products",
+    title: "Customer & member product experiences",
     description:
-      "Customer-facing apps, member portals, and digital experiences that feel polished from day one.",
+      "Polished customer-facing apps, member areas, and digital touchpoints with the same engineering discipline as internal systems—on brand, on policy, on scale.",
     icon: Layers,
     accent: "from-sky-500/20 to-indigo-500/5",
   },

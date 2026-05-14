@@ -5,6 +5,7 @@ import {
 } from "../../data/consultation"
 import { sectionSurface } from "../../lib/sectionSurfaces"
 import ScrollReveal from "../ui/ScrollReveal"
+import SectionBridge from "../ui/SectionBridge"
 import SectionHeading from "../ui/SectionHeading"
 
 function DashboardVignette() {
@@ -85,6 +86,14 @@ export default function Process() {
     >
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-indigo-950/10 to-transparent blur-2xl" />
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <SectionBridge className="mb-8 sm:mb-10">
+          <p className="text-sm leading-relaxed text-muted">
+            Above: shipped systems and live surfaces. Below: how Bryant Labs
+            sequences work—intake alignment, scoped milestones, and approvals
+            between phases—before you reach pricing or support options.
+          </p>
+        </SectionBridge>
+
         <SectionHeading
           eyebrow="Engagement path"
           title={projectForwardTitle}

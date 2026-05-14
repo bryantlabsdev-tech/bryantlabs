@@ -4,17 +4,25 @@ import {
   portfolioShowsTestFlightUi,
 } from "../../lib/portfolioVisibility"
 
-export default function ProjectMockup({ project }) {
+export default function ProjectMockup({ project, compact = false }) {
+  const shell = compact
+    ? "rounded-[1.35rem] border border-white/10 bg-black/30 p-3 sm:p-3.5"
+    : "rounded-[1.75rem] border border-white/10 bg-black/30 p-4 sm:p-5"
+  const innerGap = compact ? "space-y-3" : "space-y-4"
+  const panelPad = compact ? "p-3" : "p-4"
+  const nameSize = compact ? "text-base font-semibold" : "text-lg font-semibold"
+  const phoneMax = compact ? "max-w-[10rem]" : "max-w-[11rem]"
+
   return (
-    <div className="relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-black/30 p-4 sm:p-5">
+    <div className={`relative overflow-hidden ${shell}`}>
       <div
         className="absolute inset-0 opacity-70"
         style={{
           background: `radial-gradient(circle at 30% 20%, ${project.theme.glow}, transparent 55%)`,
         }}
       />
-      <div className="relative space-y-4">
-        <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
+      <div className={`relative ${innerGap}`}>
+        <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-2.5 sm:px-4 sm:py-3">
           <div className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-rose-400/80" />
             <span className="h-2.5 w-2.5 rounded-full bg-amber-300/80" />
@@ -26,23 +34,23 @@ export default function ProjectMockup({ project }) {
         </div>
 
         <motion.div
-          className={`overflow-hidden rounded-[1.35rem] bg-gradient-to-br ${project.theme.panel} p-4 shadow-2xl`}
-          whileHover={{ y: -4 }}
+          className={`overflow-hidden rounded-[1.2rem] bg-gradient-to-br ${project.theme.panel} ${panelPad} shadow-2xl sm:rounded-[1.35rem]`}
+          whileHover={{ y: compact ? -2 : -4 }}
           transition={{ type: "spring", stiffness: 260, damping: 22 }}
         >
-          <div className="mb-4 flex items-start justify-between gap-3">
+          <div className={`${compact ? "mb-3" : "mb-4"} flex items-start justify-between gap-3`}>
             <div>
               <p className="text-xs uppercase tracking-[0.2em] text-white/45">
                 {isPortfolioProjectPrivateOnly(project)
                   ? "Schematic layout (no client data)"
                   : "Product preview"}
               </p>
-              <p className="mt-1 text-lg font-semibold text-white">
+              <p className={`mt-1 text-white ${nameSize}`}>
                 {project.name}
               </p>
             </div>
             <div
-              className={`shrink-0 rounded-2xl bg-gradient-to-r ${project.theme.gradient} px-3 py-1.5 text-xs font-medium text-white`}
+              className={`shrink-0 rounded-2xl bg-gradient-to-r ${project.theme.gradient} px-2.5 py-1 text-[11px] font-medium text-white sm:px-3 sm:py-1.5 sm:text-xs`}
             >
               {project.badge}
             </div>
@@ -108,7 +116,7 @@ export default function ProjectMockup({ project }) {
                 </div>
               </div>
 
-              <div className="relative mx-auto w-full max-w-[11rem]">
+              <div className={`relative mx-auto w-full ${phoneMax}`}>
                 <div className="absolute inset-x-6 top-0 h-5 rounded-b-2xl bg-black/80" />
                 <div className="overflow-hidden rounded-[1.6rem] border border-white/15 bg-slate-950 p-2 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.8)]">
                   <div

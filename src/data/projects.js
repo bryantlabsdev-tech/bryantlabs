@@ -1,5 +1,46 @@
 export const projects = [
   {
+    slug: "stackless",
+    name: "Stackless",
+    featured: true,
+    tagline: "Contractor CRM, dispatch, scheduling, and field operations in one platform",
+    category: "Contractor CRM & Dispatch Platform",
+    badge: "Live Platform",
+    description:
+      "Contractor CRM and field operations platform for managing customers, crews, jobs, dispatch, and schedules in one workflow. Built with a typed React/Vite frontend, Supabase Auth and Postgres with RLS, multi-tenant operations data, Stripe billing, and a Node/Express integration layer.",
+    highlights: [
+      "Multi-tenant customer, crew, and job management",
+      "Job dispatch, assignments, and scheduling workflows",
+      "Field verification with checklists and proof photo support",
+      "Supabase Auth, Postgres, RLS, and storage-backed workflows",
+      "Stripe billing, customer portal, and crew invites via email/SMS",
+    ],
+    links: [
+      { label: "View Platform", href: "https://stack-less.vercel.app/" },
+      {
+        label: "iOS TestFlight",
+        href: "https://testflight.apple.com/join/zbvZPNHE",
+      },
+    ],
+    stack: [
+      "TypeScript",
+      "React",
+      "Vite",
+      "Supabase",
+      "Multi-tenant Data Model",
+      "Job Dispatch",
+      "Stripe Billing",
+      "Node/Express",
+      "Capacitor Mobile",
+      "Field Verification",
+    ],
+    theme: {
+      gradient: "from-violet-500 via-purple-500 to-fuchsia-600",
+      glow: "rgba(168, 85, 247, 0.28)",
+      panel: "from-violet-950 to-slate-950",
+    },
+  },
+  {
     name: "Ummah",
     tagline: "Short-form social platform for web and mobile, built to scale",
     category: "Consumer Social Platform",
@@ -104,45 +145,6 @@ export const projects = [
       gradient: "from-amber-400 via-orange-500 to-rose-500",
       glow: "rgba(251, 146, 60, 0.28)",
       panel: "from-orange-950 to-slate-950",
-    },
-  },
-  {
-    name: "Stackless",
-    tagline: "Contractor CRM, dispatch, scheduling, and field operations in one platform",
-    category: "Contractor CRM & Dispatch Platform",
-    badge: "Active Prototype",
-    description:
-      "Contractor CRM and field operations platform for managing customers, crews, jobs, dispatch, and schedules in one workflow. Built with a typed React/Vite frontend, Supabase Auth and Postgres with RLS, multi-tenant operations data, Stripe billing, and a Node/Express integration layer.",
-    highlights: [
-      "Multi-tenant customer, crew, and job management",
-      "Job dispatch, assignments, and scheduling workflows",
-      "Field verification with checklists and proof photo support",
-      "Supabase Auth, Postgres, RLS, and storage-backed workflows",
-      "Stripe billing, customer portal, and crew invites via email/SMS",
-    ],
-    links: [
-      { label: "View Platform", href: "https://stack-less.vercel.app/" },
-      {
-        label: "iOS TestFlight",
-        href: "https://testflight.apple.com/join/zbvZPNHE",
-      },
-    ],
-    stack: [
-      "TypeScript",
-      "React",
-      "Vite",
-      "Supabase",
-      "Multi-tenant Data Model",
-      "Job Dispatch",
-      "Stripe Billing",
-      "Node/Express",
-      "Capacitor Mobile",
-      "Field Verification",
-    ],
-    theme: {
-      gradient: "from-violet-500 via-purple-500 to-fuchsia-600",
-      glow: "rgba(168, 85, 247, 0.28)",
-      panel: "from-violet-950 to-slate-950",
     },
   },
 ]

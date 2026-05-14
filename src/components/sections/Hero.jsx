@@ -1,6 +1,7 @@
 import { motion } from "framer-motion"
 import { ArrowRight, Sparkles } from "lucide-react"
 import { discoveryRequestCta, secondaryCta } from "../../data/sessions"
+import { trackCtaClick } from "../../lib/analytics"
 import Button from "../ui/Button"
 import ScrollReveal from "../ui/ScrollReveal"
 
@@ -32,8 +33,15 @@ export default function Hero() {
 
             <ScrollReveal delay={0.1}>
               <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">
-                We build mobile apps, dashboards, SaaS platforms, automation
-                workflows, and AI-powered tools—from planning through launch.
+                Milestone-scoped work across mobile, web, SaaS, automation, and
+                AI—built for deployment readiness and maintainable systems, not
+                one-off scripts.
+              </p>
+              <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted sm:text-base">
+                <span className="font-medium text-white/80">Strong fit:</span>{" "}
+                startups, service businesses, and teams with workflow-heavy
+                operations, internal tooling gaps, or customer-facing products that
+                need disciplined implementation alignment.
               </p>
             </ScrollReveal>
 
@@ -44,12 +52,20 @@ export default function Hero() {
               <Button
                 href="/#work"
                 variant="secondary"
-                className="w-full sm:w-auto"
+                className="hidden w-auto sm:inline-flex"
                 analyticsCta={secondaryCta}
               >
                 {secondaryCta}
                 <ArrowRight className="h-4 w-4" />
               </Button>
+              <a
+                href="/#work"
+                className="inline-flex min-h-10 items-center justify-center gap-1.5 text-sm font-medium text-cyan-300/90 underline decoration-cyan-400/35 underline-offset-4 transition-colors hover:text-cyan-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/40 focus-visible:ring-offset-2 focus-visible:ring-offset-ink sm:hidden"
+                onClick={() => void trackCtaClick(secondaryCta, { href: "/#work" })}
+              >
+                {secondaryCta}
+                <ArrowRight className="h-4 w-4" />
+              </a>
             </ScrollReveal>
 
             <ScrollReveal delay={0.2} className="mt-10 grid gap-3 sm:mt-12 sm:grid-cols-3 sm:gap-4">

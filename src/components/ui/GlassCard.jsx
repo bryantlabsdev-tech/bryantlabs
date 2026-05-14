@@ -16,7 +16,7 @@ export default function GlassCard({
 
   return (
     <Component
-      className={`glass rounded-3xl ${className}`}
+      className={`glass rounded-3xl transition-[border-color,box-shadow] duration-300 hover:border-white/15 ${className}`}
       {...motionProps}
       {...props}
     >
