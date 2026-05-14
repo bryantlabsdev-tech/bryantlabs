@@ -36,16 +36,16 @@ export const projects = [
   },
   {
     name: "TrackoraAI",
-    tagline: "AI workflow and coaching platform with full product plumbing",
+    tagline: "AI coaching SaaS with billing, auth, and managed OpenAI delivery",
     category: "AI Workflow Tool",
     badge: "Live Platform",
     description:
-      "AI-powered coaching and workflow platform with subscriptions, authentication, and mobile and web support.",
+      "AI-powered coaching platform built with a TypeScript React frontend (Vite), Supabase Auth and Postgres, and a Node/Express API that powers OpenAI generation, Stripe subscriptions, and webhook-based billing sync. Web-first product with an optional mobile path—subscription SaaS infrastructure, not a thin AI wrapper.",
     highlights: [
-      "AI-generated coaching forms",
-      "Subscription and payment flow",
-      "User authentication",
-      "Web and mobile access",
+      "OpenAI-powered coaching and session generation",
+      "Stripe Checkout, subscriptions, and webhook-driven billing sync",
+      "Supabase Auth with Postgres-backed profiles and plan-aware access",
+      "Protected Node/Express API layer for quotas, limits, and secure delivery",
     ],
     links: [
       { label: "View Platform", href: "https://trackoraai.com" },
@@ -54,7 +54,16 @@ export const projects = [
         href: "https://testflight.apple.com/join/Gk5dcwds",
       },
     ],
-    stack: ["React", "Vite", "Supabase", "Stripe", "Render", "OpenAI", "TestFlight"],
+    stack: [
+      "TypeScript",
+      "React",
+      "Vite",
+      "Supabase",
+      "Node.js",
+      "Express",
+      "Stripe",
+      "OpenAI",
+    ],
     theme: {
       gradient: "from-cyan-500 via-sky-500 to-blue-600",
       glow: "rgba(34, 211, 238, 0.3)",
