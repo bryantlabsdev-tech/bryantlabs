@@ -73,29 +73,32 @@ export const projects = [
   {
     slug: "trackora-hq",
     name: "TrackoraHQ",
-    tagline: "Private internal tool for sales operations and field visibility",
-    category: "Sales Analytics Dashboard",
-    badge: "Private case study",
+    tagline: "Private internal operations platform—local-first dashboards and mobile delivery",
+    category: "Internal Operations Platform",
+    badge: "Private Case Study",
     /** No public URLs — portfolio-only reference. */
     privateCaseStudy: true,
     /** Hard lock: never render TestFlight / download CTAs for this entry. */
     publicLinksAllowed: false,
     description:
-      "Private internal analytics and reporting workspace for sales operations—role-based views, goal tracking, and operational signals tailored to client workflows. Not publicly distributed; client-internal environment only.",
+      "Private internal operations platform built for mobile sales performance visibility, operational pacing, and field execution workflows. Local-first architecture with rich operational dashboards—client-internal deployment only, with no public or multi-tenant SaaS surface.",
     highlights: [
-      "Role-based performance and reporting views",
-      "Goals and pipeline visibility for the field",
-      "Operational dashboards for teams",
-      "Controlled access for approved internal stakeholders",
+      "Local-first operational dashboards",
+      "Mobile-first performance visibility for the field",
+      "Projection and pacing surfaces aligned to execution workflows",
+      "Cross-platform mobile delivery with Capacitor",
     ],
     links: [],
     privateCaseStudyFootnote: "Private internal operations platform",
     stackLabel: "Internal stack",
     stack: [
-      "React Native",
-      "Analytics Systems",
+      "React",
+      "TypeScript",
+      "Vite",
+      "Capacitor",
+      "Local-first Architecture",
       "Operational Dashboards",
-      "Internal Tooling",
+      "Cross-platform Mobile",
     ],
     theme: {
       gradient: "from-amber-400 via-orange-500 to-rose-500",
