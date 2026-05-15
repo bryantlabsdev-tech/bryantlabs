@@ -86,7 +86,9 @@ export function FormOptionGroup({
   const gridClass =
     columns === 4
       ? "grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4"
-      : "grid grid-cols-1 gap-2 sm:grid-cols-2"
+      : columns === 1
+        ? "grid grid-cols-1 gap-2"
+        : "grid grid-cols-1 gap-2 sm:grid-cols-2"
 
   const normalizedOptions = options.map((option) =>
     typeof option === "string" ? { value: option, label: option } : option,

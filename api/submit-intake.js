@@ -65,6 +65,31 @@ async function handleSubmitIntake(req, res) {
   const body = req.body ?? {}
   const payload = readIntakePayload(body)
   const userAgent = getRequestUserAgent(req)
+  const isQuickIntake = payload.intakeStage === "quick"
+
+  const requiredBase = [
+    "fullName",
+    "email",
+    "planningSession",
+    "projectSummary",
+    "budgetRange",
+    "timeline",
+    "sessionId",
+    "sessionName",
+    "sessionPriceLabel",
+  ]
+
+  const requiredFull = [
+    ...requiredBase,
+    "platform",
+    "audience",
+    "coreFeatures",
+  ]
+
+  const missingFields = (isQuickIntake ? requiredBase : requiredFull).filter(
+    (field) => !payload[field],
+  )
+
   const analyticsContext = {
     sessionId: payload.analyticsSessionId,
     userAgent,
@@ -157,21 +182,6 @@ async function handleSubmitIntake(req, res) {
         : {}),
     })
   }
-
-  const missingFields = [
-    "fullName",
-    "email",
-    "planningSession",
-    "projectSummary",
-    "platform",
-    "budgetRange",
-    "timeline",
-    "audience",
-    "coreFeatures",
-    "sessionId",
-    "sessionName",
-    "sessionPriceLabel",
-  ].filter((field) => !payload[field])
 
   if (missingFields.length > 0) {
     return res.status(400).json({

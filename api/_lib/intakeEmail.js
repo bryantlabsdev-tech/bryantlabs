@@ -27,16 +27,21 @@ function formatFieldIfValue(label, value) {
   return formatField(label, trimmed)
 }
 
-function buildClientEmailHtml({ fullName }) {
-  const greeting = escapeHtml(fullName || "there")
+function buildClientEmailHtml(payload) {
+  const greeting = escapeHtml(payload.fullName || "there")
+  const isQuick = String(payload.intakeStage ?? "").trim() === "quick"
+
+  const followUp = isQuick
+    ? `<p style="margin:0 0 16px;">If we need more detail for a useful estimate, we’ll ask targeted questions first—before suggesting paid discovery or strategy.</p>`
+    : `<p style="margin:0 0 16px;">Paid planning sessions are scheduled only after intake review. If you move forward with a build, those session fees are credited toward your project kickoff deposit.</p>`
 
   return `
     <div style="font-family:Inter,Segoe UI,sans-serif;line-height:1.6;color:#111827;max-width:640px;">
       <p style="margin:0 0 16px;">Hi ${greeting},</p>
-      <p style="margin:0 0 16px;">Thank you for submitting your project intake to Bryant Labs.</p>
-      <p style="margin:0 0 16px;">Our team will review your details and follow up by email with next steps. We typically respond within one to two business days.</p>
-      <p style="margin:0 0 16px;">Every engagement begins with qualification and planning. If your project looks like a fit, we will schedule a short complimentary intro call before any paid discovery or strategy session.</p>
-      <p style="margin:0 0 16px;">Paid planning sessions are scheduled only after intake review. If you move forward with a build, those session fees are credited toward your project kickoff deposit.</p>
+      <p style="margin:0 0 16px;">Thank you for sending your project brief to Bryant Labs.</p>
+      <p style="margin:0 0 16px;">Our team will review what you shared and follow up by email with next steps. We typically respond within one to two business days.</p>
+      <p style="margin:0 0 16px;">If your project looks like a fit, we may suggest a short complimentary intro call—only when it helps align scope and sequencing.</p>
+      ${followUp}
       <p style="margin:0 0 16px;">Development does not begin until proposal, milestones, and kickoff deposit are approved.</p>
       <p style="margin:0;">— Bryant Labs</p>
     </div>
@@ -47,10 +52,11 @@ function buildInternalEmailHtml(payload) {
   return `
     <div style="font-family:Inter,Segoe UI,sans-serif;line-height:1.6;color:#111827;max-width:720px;">
       <h1 style="margin:0 0 16px;font-size:20px;">New Bryant Labs intake submitted</h1>
+      ${formatFieldIfValue("Intake stage", payload.intakeStage)}
       ${formatField("Name", payload.fullName)}
       ${formatField("Email", payload.email)}
       ${formatFieldIfValue("Phone", payload.phone)}
-      ${formatField("Planning session preference", payload.planningSession)}
+      ${formatField("Preferred next step", payload.planningSession)}
       ${formatField("Project summary", payload.projectSummary)}
       ${formatField("Platform", payload.platform)}
       ${formatField("Budget range", payload.budgetRange)}
@@ -93,6 +99,7 @@ export function readIntakePayload(body) {
     sessionName: String(body.sessionName ?? planningSession).trim(),
     sessionPriceCents: Number(body.sessionPriceCents ?? 0),
     sessionPriceLabel: String(body.sessionPriceLabel ?? "").trim(),
+    intakeStage: String(body.intakeStage ?? "full").trim(),
     websiteUrl: String(body.website_url ?? body.websiteUrl ?? "").trim(),
     turnstileToken: String(body.turnstileToken ?? "").trim(),
     analyticsSessionId: String(body.analyticsSessionId ?? "").trim(),
@@ -132,6 +139,13 @@ export const INTAKE_CONSULTATION_LEADS_INSERT_COLUMNS = [
 ]
 
 export function mapIntakePayloadToLeadRow(payload) {
+  const baseNotes = String(payload.additionalNotes ?? "").trim()
+  const stageTag =
+    String(payload.intakeStage ?? "").trim() === "quick"
+      ? "[Stage 1: quick brief]\n"
+      : ""
+  const mergedNotes = (stageTag + baseNotes).trim()
+
   return omitUndefined({
     full_name: payload.fullName,
     email: payload.email,
@@ -148,7 +162,7 @@ export function mapIntakePayloadToLeadRow(payload) {
     desired_timeline: payload.timeline,
     budget_range: payload.budgetRange || null,
     reference_links: payload.referenceLinks || null,
-    additional_notes: payload.additionalNotes || null,
+    additional_notes: mergedNotes || null,
     status: "new",
     stripe_customer_email: payload.email,
   })
@@ -298,7 +312,10 @@ export async function sendIntakeEmails(payload) {
 
   const transporter = createTransport()
   const fromAddress = `Bryant Labs <${emailUser}>`
-  const clientSubject = "Your Bryant Labs project intake was received"
+  const clientSubject =
+    String(payload.intakeStage ?? "").trim() === "quick"
+      ? "Your Bryant Labs brief was received"
+      : "Your Bryant Labs project intake was received"
   const internalSubject = "New Bryant Labs intake submitted"
 
   const clientResult = await sendTrackedEmail(transporter, {

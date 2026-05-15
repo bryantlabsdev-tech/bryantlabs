@@ -4,7 +4,7 @@ export const billingIntro =
   "A 25% kickoff deposit secures planning and scheduling before build work. The remaining balance is paid through approved milestones, with final delivery settled before handoff."
 
 export const pricingPaymentNote =
-  "25% kickoff deposit before build work. Remaining balance paid by approved milestones. Paid discovery or strategy is credited toward kickoff if you proceed."
+  "When you approve a build plan: a 25% kickoff deposit opens the calendar; the balance follows approved milestones. Paid discovery or strategy is optional, agreed in advance—and credits toward kickoff if you proceed."
 
 export const billingPhases = [
   {

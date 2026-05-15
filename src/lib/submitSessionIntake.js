@@ -17,7 +17,16 @@ export class SessionIntakeError extends Error {
 }
 
 function buildIntakePayload(session, formData, turnstileToken) {
+  const intakeStage = String(formData.get("intakeStage") ?? "quick").trim()
+  const rawNotes = String(formData.get("notes") ?? "").trim()
+  const intakeContext = String(formData.get("intakeContext") ?? "").trim()
+  const contextLine = intakeContext
+    ? `Engagement shape: ${intakeContext}`
+    : ""
+  const additionalNotes = [contextLine, rawNotes].filter(Boolean).join("\n\n")
+
   return {
+    intakeStage,
     sessionId: session.id,
     sessionName: session.name,
     sessionPriceCents: session.priceCents,
@@ -34,7 +43,7 @@ function buildIntakePayload(session, formData, turnstileToken) {
     timeline: String(formData.get("timeline") ?? "").trim(),
     budgetRange: String(formData.get("budget") ?? "").trim(),
     referenceLinks: String(formData.get("references") ?? "").trim(),
-    additionalNotes: String(formData.get("notes") ?? "").trim(),
+    additionalNotes,
     submittedAt: new Date().toISOString(),
     website_url: String(formData.get("website_url") ?? "").trim(),
     turnstileToken: String(turnstileToken ?? "").trim(),

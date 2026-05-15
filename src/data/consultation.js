@@ -49,28 +49,28 @@ export const consultationFlowSteps = projectForwardSteps
 export const consultationEngagements = [
   {
     id: "intake",
-    name: "Free intake",
+    name: "Brief review",
     priceLabel: "Free",
-    description: "Project review and qualification at no cost.",
+    description: "We read your context and reply with clear next steps—no pitch deck required.",
   },
   {
     id: "intro-call",
     name: "Intro call",
     priceLabel: "Free",
-    description: "Short call to confirm fit, goals, and next steps.",
+    description: "Short working session to align on priorities, constraints, and sensible sequencing.",
   },
   {
     id: "discovery",
     name: "Paid discovery session",
     priceLabel: "$50",
     duration: "30 minutes",
-    description: "Focused planning for workflows, requirements, and recommendations.",
+    description: "Optional depth on workflows and requirements when implementation planning needs it.",
   },
   {
     id: "strategy",
     name: "Product strategy session",
     priceLabel: "$100",
     duration: "60 minutes",
-    description: "Deeper architecture, roadmap, and implementation planning.",
+    description: "Optional architecture and roadmap work when the path to a quote needs more definition.",
   },
 ]
