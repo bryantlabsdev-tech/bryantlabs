@@ -53,6 +53,7 @@ function buildInternalEmailHtml(payload) {
     <div style="font-family:Inter,Segoe UI,sans-serif;line-height:1.6;color:#111827;max-width:720px;">
       <h1 style="margin:0 0 16px;font-size:20px;">New Bryant Labs intake submitted</h1>
       ${formatFieldIfValue("Intake stage", payload.intakeStage)}
+      ${formatFieldIfValue("Engagement shape", payload.intakeContext)}
       ${formatField("Name", payload.fullName)}
       ${formatField("Email", payload.email)}
       ${formatFieldIfValue("Phone", payload.phone)}
@@ -100,6 +101,7 @@ export function readIntakePayload(body) {
     sessionPriceCents: Number(body.sessionPriceCents ?? 0),
     sessionPriceLabel: String(body.sessionPriceLabel ?? "").trim(),
     intakeStage: String(body.intakeStage ?? "full").trim(),
+    intakeContext: String(body.intakeContext ?? "").trim(),
     websiteUrl: String(body.website_url ?? body.websiteUrl ?? "").trim(),
     turnstileToken: String(body.turnstileToken ?? "").trim(),
     analyticsSessionId: String(body.analyticsSessionId ?? "").trim(),
@@ -121,6 +123,8 @@ export const INTAKE_CONSULTATION_LEADS_INSERT_COLUMNS = [
   "full_name",
   "email",
   "phone",
+  "intake_stage",
+  "engagement_shape",
   "company_brand",
   "selected_session_id",
   "selected_session_name",
@@ -150,6 +154,8 @@ export function mapIntakePayloadToLeadRow(payload) {
     full_name: payload.fullName,
     email: payload.email,
     phone: payload.phone || null,
+    intake_stage: payload.intakeStage || null,
+    engagement_shape: payload.intakeContext || null,
     company_brand: payload.company || null,
     selected_session_id: payload.sessionId,
     selected_session_name: payload.sessionName,

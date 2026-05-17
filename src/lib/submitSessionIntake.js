@@ -27,6 +27,7 @@ function buildIntakePayload(session, formData, turnstileToken) {
 
   return {
     intakeStage,
+    intakeContext,
     sessionId: session.id,
     sessionName: session.name,
     sessionPriceCents: session.priceCents,

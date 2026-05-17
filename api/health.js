@@ -23,8 +23,9 @@ export default async function handler(req, res) {
 
   const envConfigured = getEnvStatus()
   const ok = Object.values(envConfigured).every(Boolean)
+  const statusCode = ok ? 200 : 503
 
-  return res.status(200).json({
+  return res.status(statusCode).json({
     ok,
     app: appName,
     timestamp: new Date().toISOString(),

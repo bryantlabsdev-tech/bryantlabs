@@ -26,6 +26,13 @@ export function getRequestIp(req) {
   return forwardedFor || null
 }
 
+function isProductionRuntime() {
+  const nodeEnv = String(process.env.NODE_ENV ?? "").toLowerCase()
+  const vercelEnv = String(process.env.VERCEL_ENV ?? "").toLowerCase()
+
+  return nodeEnv === "production" || vercelEnv === "production"
+}
+
 /**
  * Cloudflare siteverify: `remoteip` is optional. Sending a wrong IP (common
  * behind multi-hop proxies) can cause `success: false` even when the widget
@@ -33,10 +40,21 @@ export function getRequestIp(req) {
  */
 export async function verifyTurnstileToken(token, remoteIp) {
   const secretKey = process.env.TURNSTILE_SECRET_KEY
+  const isProduction = isProductionRuntime()
 
   if (!secretKey) {
+    if (isProduction) {
+      console.error(
+        "[Bryant Labs] Turnstile verification failed because TURNSTILE_SECRET_KEY is not configured in production.",
+      )
+      return {
+        success: false,
+        error: "Turnstile is not configured.",
+      }
+    }
+
     console.warn(
-      "[Bryant Labs] Turnstile verification skipped because TURNSTILE_SECRET_KEY is not set.",
+      "[Bryant Labs] Turnstile verification skipped in non-production because TURNSTILE_SECRET_KEY is not set.",
     )
     return { success: true, skipped: true }
   }

@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Resolve Node version
+        id: resolve-node
+        shell: bash
+        run: |
+          NODE_VERSION=$(node -e "const pkg = require('./package.json'); const configured = pkg.engines && pkg.engines.node ? String(pkg.engines.node).trim() : ''; const majorMatch = configured.match(/\d+/); process.stdout.write(majorMatch ? majorMatch[0] : '20');")
+          echo "node_version=${NODE_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ steps.resolve-node.outputs.node_version }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Audit production dependencies
+        run: npm audit --omit=dev
